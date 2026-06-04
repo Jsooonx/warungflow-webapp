@@ -89,6 +89,10 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPassword
       }
 
       if (isLogin) {
+        sessionStorage.removeItem('warungflow_email_confirm_redirect');
+        if (window.location.search.includes('auth=confirm')) {
+          window.history.replaceState(null, '', `${window.location.pathname}#/login`);
+        }
         validatePasswordMatch();
         await signInWithEmail(email, password);
         onLoginSuccess(email);
