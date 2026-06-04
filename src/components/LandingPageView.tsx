@@ -95,9 +95,9 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({ onGetStartedCl
       featureIntegrations: 'Integrasi penyimpanan',
       featureAi: 'Asisten AI',
       featureReports: 'Laporan otomatis',
-      footerTitle: 'Bergabunglah dengan 1.200+ bisnis yang menggunakan WA Order Manager',
-      footerCta: 'Coba WA Order Manager hari ini',
-      footerCopyright: '© 2026 WA Order Manager. Dibuat dengan cinta untuk penjual online modern.',
+      footerTitle: 'Bergabunglah dengan 1.200+ bisnis yang menggunakan WarungFlow',
+      footerCta: 'Coba WarungFlow hari ini',
+      footerCopyright: '© 2026 WarungFlow. Dibuat dengan cinta untuk penjual online modern.',
       howItWorks: 'Cara Kerja',
       howItWorksTitle: '4 Langkah Mudah Kelola Pesanan',
       howItWorksSubtitle: 'Dari input pesanan hingga terkirim ke pelanggan, semua terintegrasi secara otomatis.',
@@ -152,9 +152,9 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({ onGetStartedCl
       featureIntegrations: 'Storage integrations',
       featureAi: 'AI assistant',
       featureReports: 'Automated reports',
-      footerTitle: 'Join the 1,200+ businesses using WA Order Manager',
-      footerCta: 'Try WA Order Manager today',
-      footerCopyright: '© 2026 WA Order Manager. Built with love for modern online sellers.',
+      footerTitle: 'Join the 1,200+ businesses using WarungFlow',
+      footerCta: 'Try WarungFlow today',
+      footerCopyright: '© 2026 WarungFlow. Built with love for modern online sellers.',
       howItWorks: 'How It Works',
       howItWorksTitle: '4 Easy Steps to Manage Your Orders',
       howItWorksSubtitle: 'From order input to shipping, everything is seamlessly integrated.',
@@ -226,8 +226,8 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({ onGetStartedCl
         {/* Logo container */}
         <div className="flex items-center pl-0.5 flex-shrink-0">
           <img 
-            src="/Logo-waordermanager.png" 
-            alt="WA Order Manager Logo" 
+            src="/Logo-warungflow.png" 
+            alt="WarungFlow Logo" 
             className="w-8 h-8 object-contain rounded-lg" 
           />
         </div>
@@ -309,7 +309,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({ onGetStartedCl
           <div className="hero-showcase-float relative rounded-2xl border border-slate-200 bg-white shadow-2xl overflow-hidden p-2 sm:p-3">
             <img 
               src={dashboardImg} 
-              alt="WA Order Manager Dashboard Mockup" 
+              alt="WarungFlow Dashboard Mockup" 
               className="w-full h-auto object-cover rounded-xl border border-slate-100"
             />
           </div>
@@ -688,8 +688,8 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({ onGetStartedCl
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400 font-medium">
             <div className="flex items-center gap-3">
               <img 
-                src="/Logo-waordermanager.png" 
-                alt="WA Order Manager Logo" 
+                src="/Logo-warungflow.png" 
+                alt="WarungFlow Logo" 
                 className="w-6 h-6 object-contain rounded-md" 
               />
               <span className="text-[11px] text-slate-500">

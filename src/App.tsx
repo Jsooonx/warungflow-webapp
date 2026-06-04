@@ -375,7 +375,11 @@ function App() {
 
   const appContent = (!isAuthenticated || isPasswordResetRoute) ? (
     path === 'login' ? (
-      <LoginView onLoginSuccess={handleLoginSuccess} onPasswordResetComplete={clearPasswordRecovery} />
+      <LoginView
+        onLoginSuccess={handleLoginSuccess}
+        onPasswordResetComplete={clearPasswordRecovery}
+        onBackToLanding={() => navigateWithLoading('landing')}
+      />
     ) : (
       <LandingPageView onGetStartedClick={() => navigateWithLoading('login')} />
     )

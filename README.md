@@ -1,4 +1,4 @@
-# WA Order Manager
+# WarungFlow
 
 An ultra-dense, high-performance operational tracking dashboard and order management system for WhatsApp-based sellers. Specially designed to streamline post-sale workflows, reduce manual copy-paste fatigue, and track customer lifecycles in real-time.
 

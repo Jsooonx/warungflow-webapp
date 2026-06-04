@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { CheckCircle, Key, LogIn, Mail, Sparkles, UserPlus } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Key, LogIn, Mail, Sparkles, UserPlus } from 'lucide-react';
 import { RollingText } from './RollingText';
 import {
   sendPasswordReset,
@@ -14,9 +14,10 @@ type AuthMode = 'login' | 'signup' | 'forgot' | 'reset';
 interface LoginViewProps {
   onLoginSuccess: (email: string) => void;
   onPasswordResetComplete?: () => void;
+  onBackToLanding: () => void;
 }
 
-export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPasswordResetComplete }) => {
+export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPasswordResetComplete, onBackToLanding }) => {
   const initialMode = useMemo<AuthMode>(() => (
     window.location.hash.includes('mode=reset') || sessionStorage.getItem('wa_order_manager_password_recovery') === 'true' ? 'reset' : 'login'
   ), []);
@@ -42,7 +43,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPassword
   }[mode];
 
   const subtitle = {
-    login: 'Login untuk masuk ke workspace WA Order Manager Anda.',
+    login: 'Login untuk masuk ke workspace WarungFlow Anda.',
     signup: 'Daftar akun dan verifikasi email sebelum masuk dashboard.',
     forgot: 'Masukkan email akun Anda untuk menerima link reset password.',
     reset: 'Masukkan password baru untuk mengamankan akun Anda.',
@@ -128,12 +129,12 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPassword
         <div className="max-w-md relative z-10 space-y-8">
           <div className="flex items-center gap-3">
             <img
-              src="/Logo-waordermanager.png"
-              alt="WA Order Manager Logo"
+              src="/Logo-warungflow.png"
+              alt="WarungFlow Logo"
               className="w-12 h-12 object-contain rounded-2xl"
             />
             <div>
-              <h1 className="text-xl font-bold text-white tracking-tight leading-none">WA Order Manager</h1>
+              <h1 className="text-xl font-bold text-white tracking-tight leading-none">WarungFlow</h1>
               <span className="text-[10px] text-emerald-400/80 font-semibold tracking-wider uppercase mt-1 inline-block">Workspace</span>
             </div>
           </div>
@@ -168,6 +169,15 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPassword
 
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 md:p-16 bg-white overflow-y-auto">
         <div className="w-full max-w-sm space-y-6">
+          <button
+            type="button"
+            onClick={onBackToLanding}
+            className="group inline-flex h-9 items-center gap-2 rounded-xl bg-slate-50 px-3 text-[11px] font-bold text-slate-500 shadow-xs transition-all duration-500 hover:bg-slate-950 hover:text-white"
+          >
+            <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-500 group-hover:-translate-x-0.5" />
+            <RollingText compact>Back to landing page</RollingText>
+          </button>
+
           <div className="space-y-2">
             <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight">{title}</h3>
             <p className="text-xs text-slate-400">{subtitle}</p>

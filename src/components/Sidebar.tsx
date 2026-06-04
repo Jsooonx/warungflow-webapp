@@ -37,12 +37,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="h-16 px-6 border-b border-slate-100 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <img 
-            src="/Logo-waordermanager.png" 
-            alt="WA Order Manager Logo" 
+            src="/Logo-warungflow.png" 
+            alt="WarungFlow Logo" 
             className="w-8 h-8 object-contain rounded-lg" 
           />
           <div>
-            <h1 className="text-sm font-semibold text-slate-900 tracking-tight leading-none">WA Order Manager</h1>
+            <h1 className="text-sm font-semibold text-slate-900 tracking-tight leading-none">WarungFlow</h1>
             <span className="text-[10px] text-slate-400 font-medium tracking-wider uppercase mt-0.5 inline-block"> Workspace</span>
           </div>
         </div>
