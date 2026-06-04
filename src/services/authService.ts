@@ -7,9 +7,6 @@ export const signInWithEmail = async (email: string, password: string) => {
     password,
   });
   if (error) throw error;
-  if (data.session) {
-    await supabase.auth.signOut();
-  }
   return data;
 };
 
@@ -22,10 +19,13 @@ export const signUpWithEmail = async (email: string, password: string, fullName:
       data: {
         full_name: fullName.trim(),
       },
-      emailRedirectTo: `${window.location.origin}${window.location.pathname}#/login`,
+      emailRedirectTo: `${window.location.origin}${window.location.pathname}?auth=confirm`,
     },
   });
   if (error) throw error;
+  if (data.session) {
+    await supabase.auth.signOut();
+  }
   return data;
 };
 

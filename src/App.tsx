@@ -72,6 +72,10 @@ const PageLoadingScreen = () => (
 );
 
 function App() {
+  useEffect(() => {
+    document.title = 'WarungFlow - SaaS Workspace';
+  }, []);
+
   const {
     user,
     isAuthenticated,
@@ -141,6 +145,14 @@ function App() {
       });
     }
   }, [isAuthenticated, isPasswordResetRoute, path, navigate, startPageLoading]);
+
+  useEffect(() => {
+    const publicPaths = new Set(['landing', 'login']);
+    if (!isAuthLoading && !isAuthenticated && !publicPaths.has(path)) {
+      loaderNavigationRef.current = true;
+      navigate('login');
+    }
+  }, [isAuthLoading, isAuthenticated, navigate, path]);
 
   useEffect(() => {
     const previousPath = previousPathRef.current;

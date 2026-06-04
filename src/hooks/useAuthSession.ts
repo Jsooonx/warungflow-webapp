@@ -19,11 +19,34 @@ export const useAuthSession = () => {
     }
 
     let isMounted = true;
+    const searchParams = new URLSearchParams(window.location.search);
+    const isEmailConfirmRedirect =
+      searchParams.get('auth') === 'confirm' ||
+      window.location.hash.includes('type=signup') ||
+      window.location.hash.includes('type=email');
+
+    if (isEmailConfirmRedirect) {
+      sessionStorage.setItem('warungflow_email_confirm_redirect', 'true');
+    }
+
+    const finishEmailConfirmRedirect = async () => {
+      sessionStorage.removeItem('warungflow_email_confirm_redirect');
+      await supabase.auth.signOut();
+      window.history.replaceState(null, '', `${window.location.pathname}#/login`);
+      if (!isMounted) return;
+      setSession(null);
+      setUser(null);
+      setIsAuthLoading(false);
+    };
 
     supabase.auth.getSession().then(({ data, error }) => {
       if (!isMounted) return;
       if (error) {
         setAuthError(error.message);
+      }
+      if (data.session && sessionStorage.getItem('warungflow_email_confirm_redirect') === 'true') {
+        void finishEmailConfirmRedirect();
+        return;
       }
       setSession(data.session);
       setUser(data.session?.user || null);
@@ -35,6 +58,10 @@ export const useAuthSession = () => {
         sessionStorage.setItem('wa_order_manager_password_recovery', 'true');
         setIsPasswordRecovery(true);
         window.location.hash = '/login?mode=reset';
+      }
+      if (event === 'SIGNED_IN' && nextSession && sessionStorage.getItem('warungflow_email_confirm_redirect') === 'true') {
+        void finishEmailConfirmRedirect();
+        return;
       }
       setSession(nextSession);
       setUser(nextSession?.user || null);
