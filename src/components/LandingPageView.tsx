@@ -205,27 +205,16 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({ onGetStartedCl
 
   return (
     <div className="min-h-screen w-full bg-white font-sans text-slate-900 select-none overflow-x-hidden">
-      {/* Inline styles for hardware-accelerated progress animation */}
-      <style>{`
-        @keyframes progressFill {
-          from { width: 0%; }
-          to { width: 100%; }
-        }
-        .animate-progress-fill {
-          animation: progressFill 5000ms linear forwards;
-        }
-      `}</style>
-      
       {/* Header / Dynamic Island Floating Navbar */}
       <header 
         onMouseEnter={() => setIsNavHovered(true)}
         onMouseLeave={() => setIsNavHovered(false)}
-        className={`fixed top-5 left-1/2 -translate-x-1/2 z-50 flex items-center justify-between bg-neutral-950/95 backdrop-blur-md border border-neutral-800/80 px-3 py-2 rounded-2xl shadow-xl transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        className={`hero-nav-island fixed top-5 left-1/2 -translate-x-1/2 z-50 flex items-center justify-between overflow-hidden bg-neutral-950/95 backdrop-blur-md border border-neutral-800/80 px-3 py-2 rounded-2xl shadow-xl transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           isNavHovered ? 'w-[440px] sm:w-[470px]' : 'w-[180px]'
         }`}
       >
         {/* Logo container */}
-        <div className="flex items-center pl-0.5 flex-shrink-0">
+        <div className="hero-nav-logo flex items-center pl-0.5 flex-shrink-0">
           <img 
             src="/Logo-warungflow.png" 
             alt="WarungFlow Logo" 
@@ -258,7 +247,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({ onGetStartedCl
         </nav>
 
         {/* Action Button */}
-        <div className="flex-shrink-0">
+        <div className="hero-nav-content flex-shrink-0">
           <button 
             onClick={onGetStartedClick}
             className="group h-8 px-4 rounded-xl border border-transparent bg-white hover:bg-neutral-950 text-neutral-950 hover:text-white text-xs font-extrabold transition-all duration-500 cursor-pointer shadow-sm whitespace-nowrap"
@@ -268,13 +257,14 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({ onGetStartedCl
         </div>
       </header>
 
-      {/* Hero Section Background Wrapper */}
-      <div 
-        className="w-full bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${backgroundHeroImg})` }}
-      >
+      {/* Hero Section Background Wrapper (Boxed layout) */}
+      <div className="max-w-[92rem] mx-auto px-4 sm:px-6 lg:px-8 pt-20">
+        <div 
+          className="w-full bg-cover bg-center bg-no-repeat rounded-[2rem] sm:rounded-[3rem] border border-slate-200/50 shadow-2xl overflow-hidden"
+          style={{ backgroundImage: `url(${backgroundHeroImg})` }}
+        >
         {/* Hero Section */}
-        <section className="pt-32 pb-16 px-6 text-center space-y-8 max-w-4xl mx-auto">
+        <section className="pt-16 pb-16 px-6 text-center space-y-8 max-w-4xl mx-auto">
           {/* Announce Badge */}
           <div className="hero-entry hero-entry-1 hero-badge-shimmer inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-50 border border-slate-100/80 text-[10px] font-semibold text-slate-600">
             <span className="px-1.5 py-0.5 rounded-full bg-emerald-500 text-white font-extrabold text-[8px] uppercase tracking-wide">{t.new}</span>
@@ -322,6 +312,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({ onGetStartedCl
           </div>
         </section>
       </div>
+    </div>
 
       {/* Feature Section */}
       <section id="features" className="py-24 bg-slate-50/50 border-t border-slate-100">
@@ -448,33 +439,38 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({ onGetStartedCl
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mt-16 items-center">
             
             {/* Left side: Animated tabs list */}
-            <div className="lg:col-span-5 space-y-6">
+            <div className="explore-tabs-list lg:col-span-5 space-y-6">
               {tabs.map((tab, idx) => {
                 const isActive = activeTab === idx;
                 return (
                   <div 
                     key={idx}
                     onClick={() => setActiveTab(idx)}
-                    className="group cursor-pointer block select-none text-left"
+                    className={`explore-tab-item group cursor-pointer block select-none text-left transition-opacity duration-300 ${
+                      isActive ? 'opacity-100' : 'opacity-60 hover:opacity-100'
+                    }`}
+                    style={{ '--explore-tab-delay': `${idx * 70}ms` } as React.CSSProperties}
                   >
-                    <div className="space-y-2">
-                      <h3 className={`text-sm font-bold transition-colors ${
+                    <div className={`space-y-2 ${isActive ? 'explore-tab-active-content' : ''}`}>
+                      <h3 className={`text-sm font-bold transition-all duration-300 ${
                         isActive ? 'text-slate-900' : 'text-slate-400 group-hover:text-slate-600'
-                      }`}>
+                      } group-hover:translate-x-1`}>
                         {tab.title}
                       </h3>
                       {isActive && (
-                        <p className="text-xs text-slate-500 leading-relaxed animate-in fade-in slide-in-from-top-1 duration-200">
+                        <p className="text-xs text-slate-500 leading-relaxed">
                           {tab.desc}
                         </p>
                       )}
                     </div>
                     
                     {/* Progress indicator bar */}
-                    <div className="w-full h-[2px] bg-slate-100 relative mt-4">
+                    <div className="w-full h-[2px] bg-slate-100 relative mt-4 overflow-hidden">
                       {isActive && (
                         <div 
-                          className="absolute top-0 left-0 h-full bg-slate-900 animate-progress-fill"
+                          key={`explore-progress-${activeTab}`}
+                          className="explore-tab-progress absolute top-0 left-0 h-full w-full"
+                          style={{ '--explore-duration': `${duration}ms` } as React.CSSProperties}
                         />
                       )}
                     </div>
@@ -484,14 +480,18 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({ onGetStartedCl
             </div>
 
             {/* Right side: Product preview */}
-            <div className="lg:col-span-7 bg-slate-50 border border-slate-100 rounded-3xl p-6 sm:p-10 flex items-center justify-center min-h-[440px] shadow-xs">
-              <div className="relative rounded-2xl border border-slate-200 bg-white shadow-xl overflow-hidden p-2 w-full max-w-lg transition-all duration-300 transform scale-100">
-                <img 
-                  src={tabs[activeTab].image} 
-                  alt={tabs[activeTab].title}
-                  key={activeTab}
-                  className="w-full h-auto object-cover rounded-xl border border-slate-100 animate-in fade-in duration-300"
-                />
+            <div className="explore-preview-stage lg:col-span-7 bg-slate-50 border border-slate-100 rounded-3xl p-6 sm:p-10 flex items-center justify-center min-h-[440px] shadow-xs">
+              <div className="explore-preview-float w-full max-w-lg">
+                <div
+                  key={`explore-preview-${activeTab}`}
+                  className="explore-preview-card explore-preview-sheen relative rounded-2xl border border-slate-200 bg-white shadow-xl overflow-hidden p-2 w-full"
+                >
+                  <img 
+                    src={tabs[activeTab].image} 
+                    alt={tabs[activeTab].title}
+                    className="explore-preview-image w-full h-auto object-cover rounded-xl border border-slate-100"
+                  />
+                </div>
               </div>
             </div>
 
