@@ -103,6 +103,7 @@ function App() {
   const isPasswordResetRoute = (path === 'login' && window.location.hash.includes('mode=reset')) || isPasswordRecovery;
 
   const [isPageLoading, setIsPageLoading] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [pageLoadingRun, setPageLoadingRun] = useState(0);
   const pageLoadingActionTimerRef = useRef<number | null>(null);
   const pageLoadingEndTimerRef = useRef<number | null>(null);
@@ -138,21 +139,21 @@ function App() {
 
   // Redirect authenticated users away from landing/login pages to dashboard
   useEffect(() => {
-    if (isAuthenticated && (path === 'landing' || (path === 'login' && !isPasswordResetRoute))) {
+    if (!isLoggingOut && isAuthenticated && (path === 'landing' || (path === 'login' && !isPasswordResetRoute))) {
       startPageLoading(() => {
         loaderNavigationRef.current = true;
         navigate('dashboard');
       });
     }
-  }, [isAuthenticated, isPasswordResetRoute, path, navigate, startPageLoading]);
+  }, [isAuthenticated, isLoggingOut, isPasswordResetRoute, path, navigate, startPageLoading]);
 
   useEffect(() => {
     const publicPaths = new Set(['landing', 'login']);
-    if (!isAuthLoading && !isAuthenticated && !publicPaths.has(path)) {
+    if (!isLoggingOut && !isAuthLoading && !isAuthenticated && !publicPaths.has(path)) {
       loaderNavigationRef.current = true;
       navigate('login');
     }
-  }, [isAuthLoading, isAuthenticated, navigate, path]);
+  }, [isAuthLoading, isAuthenticated, isLoggingOut, navigate, path]);
 
   useEffect(() => {
     const previousPath = previousPathRef.current;
@@ -236,12 +237,20 @@ function App() {
   const handleLogout = async () => {
     const confirmed = window.confirm('Apakah Anda yakin ingin keluar dari workspace?');
     if (confirmed) {
+      setIsLoggingOut(true);
       startPageLoading(() => {
-        void signOut().finally(() => {
-          showToast('Logout berhasil', 'Sesi Anda telah diakhiri.');
-          loaderNavigationRef.current = true;
-          navigate('landing');
-        });
+        void signOut()
+          .then(() => {
+            showToast('Logout berhasil', 'Sesi Anda telah diakhiri.');
+            loaderNavigationRef.current = true;
+            navigate('landing');
+          })
+          .catch((error) => {
+            showToast('Logout gagal', error instanceof Error ? error.message : 'Sesi belum bisa diakhiri.');
+          })
+          .finally(() => {
+            window.setTimeout(() => setIsLoggingOut(false), 300);
+          });
       });
     }
   };
@@ -391,7 +400,9 @@ function App() {
     return <PageLoadingScreen />;
   }
 
-  const appContent = (!isAuthenticated || isPasswordResetRoute) ? (
+  const shouldShowPublicShell = !isAuthenticated || isPasswordResetRoute || isLoggingOut;
+
+  const appContent = shouldShowPublicShell ? (
     path === 'login' ? (
       <LoginView
         onLoginSuccess={handleLoginSuccess}

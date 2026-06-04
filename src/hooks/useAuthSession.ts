@@ -61,6 +61,12 @@ export const useAuthSession = () => {
         setIsPasswordRecovery(true);
         window.location.hash = '/login?mode=reset';
       }
+      if (event === 'SIGNED_OUT') {
+        setSession(null);
+        setUser(null);
+        setIsAuthLoading(false);
+        return;
+      }
       if (event === 'SIGNED_IN' && nextSession && sessionStorage.getItem('warungflow_email_confirm_redirect') === 'true') {
         void finishEmailConfirmRedirect();
         return;
