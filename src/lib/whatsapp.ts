@@ -78,10 +78,10 @@ export const copyInvoiceAndOpenWhatsApp = async (order: InvoiceDraft, allOrders:
 
   try {
     await navigator.clipboard.writeText(text);
-    window.open(link, '_blank');
+    window.open(link, '_blank', 'noopener,noreferrer');
     return { copied: true };
   } catch {
-    window.open(link, '_blank');
+    window.open(link, '_blank', 'noopener,noreferrer');
     return { copied: false };
   }
 };

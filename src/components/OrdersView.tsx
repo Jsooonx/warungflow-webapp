@@ -85,7 +85,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
       
       // Open WhatsApp link in new tab
       const link = formatWhatsAppLink(order.whatsappNumber);
-      window.open(link, '_blank');
+      window.open(link, '_blank', 'noopener,noreferrer');
       onWhatsAppCopied(order.orderNumber);
     }).catch(err => {
       console.error('Failed to copy text', err);

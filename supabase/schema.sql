@@ -133,10 +133,21 @@ alter table public.orders enable row level security;
 alter table public.templates enable row level security;
 alter table public.beta_approved_emails enable row level security;
 
+revoke insert, update, delete on public.profiles from anon, authenticated;
+grant select on public.profiles to authenticated;
+grant update (full_name, local_orders_imported) on public.profiles to authenticated;
+
 drop policy if exists "Profiles are user-owned" on public.profiles;
-create policy "Profiles are user-owned"
+drop policy if exists "Profiles are selectable by owner" on public.profiles;
+create policy "Profiles are selectable by owner"
 on public.profiles
-for all
+for select
+using (id = auth.uid());
+
+drop policy if exists "Profiles limited update by owner" on public.profiles;
+create policy "Profiles limited update by owner"
+on public.profiles
+for update
 using (id = auth.uid())
 with check (id = auth.uid());
 
