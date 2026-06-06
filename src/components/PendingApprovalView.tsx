@@ -12,7 +12,7 @@ interface PendingApprovalViewProps {
 const statusCopy = {
   pending: {
     title: 'Akses beta sedang direview',
-    body: 'Akun Anda sudah masuk, tapi dashboard WarungFlow baru terbuka setelah kami approve dari daftar beta.',
+    body: 'Akun Anda sudah masuk, tapi dashboard Warungify baru terbuka setelah kami approve dari daftar beta.',
     badge: 'Pending review',
   },
   waitlist: {
@@ -41,9 +41,9 @@ export const PendingApprovalView: React.FC<PendingApprovalViewProps> = ({ profil
       <div className="w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xl shadow-slate-900/6">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
-            <img src="/Logo-warungflow.png" alt="WarungFlow Logo" className="h-11 w-11 rounded-2xl object-contain" />
+            <img src="/Logo-warungify.png" alt="Warungify Logo" className="h-11 w-11 rounded-2xl object-contain" />
             <div>
-              <p className="text-lg font-extrabold text-slate-950 leading-none">WarungFlow</p>
+              <p className="text-lg font-extrabold text-slate-950 leading-none">Warungify</p>
               <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-600">Beta Access</p>
             </div>
           </div>

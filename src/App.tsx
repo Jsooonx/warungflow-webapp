@@ -105,9 +105,9 @@ const MobileAppShell = ({
     <div className="lg:hidden flex h-screen w-screen flex-col overflow-hidden bg-slate-50">
       <header className="h-14 shrink-0 border-b border-slate-200 bg-white px-4 flex items-center justify-between">
         <div className="flex items-center gap-2.5 min-w-0">
-          <img src="/Logo-warungflow.png" alt="WarungFlow Logo" className="h-8 w-8 rounded-lg object-contain" />
+          <img src="/Logo-warungify.png" alt="Warungify Logo" className="h-8 w-8 rounded-lg object-contain" />
           <div className="min-w-0">
-            <p className="text-sm font-extrabold text-slate-900 leading-none">WarungFlow</p>
+            <p className="text-sm font-extrabold text-slate-900 leading-none">Warungify</p>
             <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 truncate">{userName}</p>
           </div>
         </div>
@@ -155,7 +155,7 @@ const MobileAppShell = ({
 
 function App() {
   useEffect(() => {
-    document.title = 'WarungFlow - SaaS Workspace';
+    document.title = 'Warungify - SaaS Workspace';
   }, []);
 
   const {
@@ -228,7 +228,7 @@ function App() {
       return;
     }
 
-    const saved = localStorage.getItem(`warungflow_invoice_handled_${user.id}`);
+    const saved = localStorage.getItem(`warungify_invoice_handled_${user.id}`);
     setLocalInvoiceHandledOrderIds(saved ? JSON.parse(saved) as string[] : []);
   }, [user?.id]);
 
@@ -243,7 +243,7 @@ function App() {
     if (!user?.id) return;
     setLocalInvoiceHandledOrderIds((prev) => {
       const next = Array.from(new Set([...prev, orderId]));
-      localStorage.setItem(`warungflow_invoice_handled_${user.id}`, JSON.stringify(next));
+      localStorage.setItem(`warungify_invoice_handled_${user.id}`, JSON.stringify(next));
       return next;
     });
     try {

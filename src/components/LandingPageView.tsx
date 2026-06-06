@@ -129,9 +129,9 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({ onGetStartedCl
       featureIntegrations: 'Integrasi penyimpanan',
       featureAi: 'Asisten AI',
       featureReports: 'Laporan otomatis',
-      footerTitle: 'Amankan kuota Anda dan bergabunglah dalam program eksklusif Beta WarungFlow sekarang',
-      footerCta: 'Daftar Beta WarungFlow',
-      footerCopyright: '© 2026 WarungFlow. Dibuat dengan cinta untuk penjual online modern.',
+      footerTitle: 'Amankan kuota Anda dan bergabunglah dalam program eksklusif Beta Warungify sekarang',
+      footerCta: 'Daftar Beta Warungify',
+      footerCopyright: '© 2026 Warungify. Dibuat dengan cinta untuk penjual online modern.',
       howItWorks: 'Cara Kerja',
       howItWorksTitle: '4 Langkah Mudah Kelola Pesanan',
       howItWorksSubtitle: 'Dari input pesanan hingga terkirim ke pelanggan, semua terintegrasi secara otomatis.',
@@ -188,9 +188,9 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({ onGetStartedCl
       featureIntegrations: 'Storage integrations',
       featureAi: 'AI assistant',
       featureReports: 'Automated reports',
-      footerTitle: 'Secure your spot and join the exclusive WarungFlow Beta program today',
-      footerCta: 'Join WarungFlow Beta',
-      footerCopyright: '© 2026 WarungFlow. Built with love for modern online sellers.',
+      footerTitle: 'Secure your spot and join the exclusive Warungify Beta program today',
+      footerCta: 'Join Warungify Beta',
+      footerCopyright: '© 2026 Warungify. Built with love for modern online sellers.',
       howItWorks: 'How It Works',
       howItWorksTitle: '4 Easy Steps to Manage Your Orders',
       howItWorksSubtitle: 'From order input to shipping, everything is seamlessly integrated.',
@@ -251,8 +251,8 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({ onGetStartedCl
         {/* Logo container */}
         <div className="hero-nav-logo flex items-center pl-0.5 flex-shrink-0">
           <img 
-            src="/Logo-warungflow.png" 
-            alt="WarungFlow Logo" 
+            src="/Logo-warungify.png" 
+            alt="Warungify Logo" 
             className="w-8 h-8 object-contain rounded-lg" 
           />
         </div>
@@ -334,6 +334,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({ onGetStartedCl
             </button>
             <a 
               href="#features"
+              onClick={(e) => handleAnchorScroll(e, 'features')}
               className="group h-10 px-6 rounded-lg border border-transparent bg-white hover:bg-slate-950 text-slate-700 hover:text-white text-xs font-bold flex items-center justify-center transition-all duration-500 cursor-pointer shadow-sm"
             >
               <RollingText>{t.learnMore}</RollingText>
@@ -350,7 +351,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({ onGetStartedCl
             <div className="hero-showcase-float relative rounded-2xl border border-slate-200 bg-white shadow-2xl overflow-hidden p-2 sm:p-3">
               <img 
                 src={dashboardImg} 
-                alt="WarungFlow Dashboard Preview" 
+                alt="Warungify Dashboard Preview" 
                 className="w-full h-auto object-cover rounded-xl border border-slate-100"
               />
             </div>
@@ -817,8 +818,8 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({ onGetStartedCl
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400 font-medium">
             <div className="flex items-center gap-3">
               <img 
-                src="/Logo-warungflow.png" 
-                alt="WarungFlow Logo" 
+                src="/Logo-warungify.png" 
+                alt="Warungify Logo" 
                 className="w-6 h-6 object-contain rounded-md" 
               />
               <span className="text-[11px] text-slate-500">

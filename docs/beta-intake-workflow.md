@@ -1,29 +1,29 @@
-# WarungFlow Beta Intake Workflow
+# Warungify Beta Intake Workflow
 
 ## Google Form fields
 
 Use these required questions for the public beta application form:
 
 1. Nama lengkap
-2. Email untuk login WarungFlow
+2. Email untuk login Warungify
 3. Nomor WhatsApp aktif
 4. Nama toko / bisnis
 5. Kategori produk yang dijual
 6. Rata-rata order per hari
 7. Kendala terbesar saat jualan pure via WhatsApp
-8. Fitur WarungFlow yang paling dibutuhkan
+8. Fitur Warungify yang paling dibutuhkan
 9. Bersedia memberi feedback setelah trial? (Ya/Tidak)
 
 Suggested form description:
 
 ```text
-100 pendaftar pertama akan kami review. Akses beta diberikan bertahap mulai dari Batch 1 untuk seller yang paling sesuai dengan fokus awal WarungFlow.
+100 pendaftar pertama akan kami review. Akses beta diberikan bertahap mulai dari Batch 1 untuk seller yang paling sesuai dengan fokus awal Warungify.
 ```
 
 Suggested closed message:
 
 ```text
-Pendaftaran beta WarungFlow sementara sudah penuh. Terima kasih sudah tertarik.
+Pendaftaran beta Warungify sementara sudah penuh. Terima kasih sudah tertarik.
 ```
 
 ## Google Sheet columns
@@ -64,7 +64,7 @@ function onFormSubmit() {
   if (responses.length >= MAX_RESPONSES) {
     form.setAcceptingResponses(false);
     form.setCustomClosedFormMessage(
-      "Pendaftaran beta WarungFlow sementara sudah penuh. Terima kasih sudah tertarik."
+      "Pendaftaran beta Warungify sementara sudah penuh. Terima kasih sudah tertarik."
     );
   }
 }
@@ -91,7 +91,7 @@ Example assumptions:
 - `K2` = Batch
 
 ```text
-=IF($J2<>"approved","",HYPERLINK("https://wa.me/"&REGEXREPLACE(REGEXREPLACE($D2,"[^0-9]",""),"^0","62")&"?text="&ENCODEURL("Halo "&$B2&", aku dari WarungFlow."&CHAR(10)&CHAR(10)&"Kamu masuk Batch "&$K2&" untuk trial beta WarungFlow."&CHAR(10)&CHAR(10)&"Silakan daftar/login pakai email ini:"&CHAR(10)&$C2&CHAR(10)&CHAR(10)&"Link app:"&CHAR(10)&"https://your-vercel-app.vercel.app"&CHAR(10)&CHAR(10)&"Setelah masuk, coba buat order pertama dan pakai untuk alur jualan WhatsApp kamu. Nanti setelah beberapa hari aku minta feedback singkat ya."),"Kirim WA"))
+=IF($J2<>"approved","",HYPERLINK("https://wa.me/"&REGEXREPLACE(REGEXREPLACE($D2,"[^0-9]",""),"^0","62")&"?text="&ENCODEURL("Halo "&$B2&", aku dari Warungify."&CHAR(10)&CHAR(10)&"Kamu masuk Batch "&$K2&" untuk trial beta Warungify."&CHAR(10)&CHAR(10)&"Silakan daftar/login pakai email ini:"&CHAR(10)&$C2&CHAR(10)&CHAR(10)&"Link app:"&CHAR(10)&"https://your-vercel-app.vercel.app"&CHAR(10)&CHAR(10)&"Setelah masuk, coba buat order pertama dan pakai untuk alur jualan WhatsApp kamu. Nanti setelah beberapa hari aku minta feedback singkat ya."),"Kirim WA"))
 ```
 
 After sending the WhatsApp message, fill `notified_at` manually.

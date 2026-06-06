@@ -50,7 +50,7 @@ export const getInvoiceId = (order: InvoiceDraft, allOrders: InvoiceDraft[] = []
 
 export const compileInvoiceText = (order: InvoiceDraft, allOrders: InvoiceDraft[] = []) => {
   const lines = [
-    'WarungFlow / Invoice Order',
+    'Warungify / Invoice Order',
     '',
     `Invoice ID: ${getInvoiceId(order, allOrders)}`,
     `Order: ${order.orderNumber}`,

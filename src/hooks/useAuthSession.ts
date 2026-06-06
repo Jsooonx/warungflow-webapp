@@ -4,7 +4,7 @@ import { supabase, isSupabaseConfigured } from '../lib/supabaseClient';
 import type { Profile } from '../types';
 import { fetchProfile } from '../services/profileService';
 
-const PASSWORD_RECOVERY_KEY = 'warungflow_password_recovery';
+const PASSWORD_RECOVERY_KEY = 'warungify_password_recovery';
 
 export const useAuthSession = () => {
   const [session, setSession] = useState<Session | null>(null);
@@ -32,11 +32,11 @@ export const useAuthSession = () => {
       window.location.hash.includes('type=email');
 
     if (isEmailConfirmRedirect) {
-      sessionStorage.setItem('warungflow_email_confirm_redirect', 'true');
+      sessionStorage.setItem('warungify_email_confirm_redirect', 'true');
     }
 
     const finishEmailConfirmRedirect = async () => {
-      sessionStorage.removeItem('warungflow_email_confirm_redirect');
+      sessionStorage.removeItem('warungify_email_confirm_redirect');
       await supabase.auth.signOut();
       window.history.replaceState(null, '', `${window.location.pathname}#/login`);
       if (!isMounted) return;
@@ -78,7 +78,7 @@ export const useAuthSession = () => {
       if (error) {
         setAuthError(error.message);
       }
-      if (data.session && sessionStorage.getItem('warungflow_email_confirm_redirect') === 'true') {
+      if (data.session && sessionStorage.getItem('warungify_email_confirm_redirect') === 'true') {
         void finishEmailConfirmRedirect();
         return;
       }
@@ -100,7 +100,7 @@ export const useAuthSession = () => {
         setIsAuthLoading(false);
         return;
       }
-      if (event === 'SIGNED_IN' && nextSession && sessionStorage.getItem('warungflow_email_confirm_redirect') === 'true') {
+      if (event === 'SIGNED_IN' && nextSession && sessionStorage.getItem('warungify_email_confirm_redirect') === 'true') {
         void finishEmailConfirmRedirect();
         return;
       }

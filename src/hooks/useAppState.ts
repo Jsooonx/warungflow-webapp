@@ -5,9 +5,9 @@ import { supabase, requireSupabaseConfig, isSupabaseConfigured } from '../lib/su
 import { createOrder, deleteOrderById, fetchOrders, importOrders, updateOrderById } from '../services/orderService';
 import { PREDEFINED_TEMPLATES, seedTemplatesIfEmpty } from '../services/templateService';
 
-const STORAGE_KEY_ORDERS = 'warungflow_orders';
+const STORAGE_KEY_ORDERS = 'warungify_orders';
 const LEGACY_STORAGE_KEY_ORDERS = 'wa_order_manager_orders';
-const getImportFlagKey = (userId: string) => `warungflow_imported_${userId}`;
+const getImportFlagKey = (userId: string) => `warungify_imported_${userId}`;
 const getLegacyImportFlagKey = (userId: string) => `wa_order_manager_imported_${userId}`;
 
 const getSavedLocalOrders = () => (

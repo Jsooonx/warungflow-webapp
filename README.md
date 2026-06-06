@@ -1,6 +1,6 @@
-# WarungFlow
+# Warungify
 
-WarungFlow is an operations workspace for sellers who run their business through WhatsApp. It turns messy chat-based orders into a structured workflow: capture the order, track payment and packing, follow up through WhatsApp, monitor daily bottlenecks, and keep a customer history without maintaining spreadsheets by hand.
+Warungify is an operations workspace for sellers who run their business through WhatsApp. It turns messy chat-based orders into a structured workflow: capture the order, track payment and packing, follow up through WhatsApp, monitor daily bottlenecks, and keep a customer history without maintaining spreadsheets by hand.
 
 The product is currently designed for controlled beta testing. Public visitors apply through a beta form, approved sellers receive access through WhatsApp, and only approved accounts can open the workspace dashboard.
 
@@ -13,7 +13,7 @@ The product is currently designed for controlled beta testing. Public visitors a
    The owner reviews responses in Google Sheet, marks selected sellers as approved, and sends a WhatsApp approval message using a generated click-to-chat link. Approved emails are added to the Supabase allowlist.
 
 3. **Create an account**
-   Approved sellers create a WarungFlow account with Supabase Auth. Email verification is still required, but operational communication happens through WhatsApp.
+   Approved sellers create a Warungify account with Supabase Auth. Email verification is still required, but operational communication happens through WhatsApp.
 
 4. **Enter the workspace**
    The app checks the user's profile status after login. Approved users enter the dashboard; pending or waitlisted users see a review status screen instead.
@@ -102,4 +102,4 @@ Before opening a beta batch, the production database must include the latest sch
 
 The landing page points applicants to the beta form through `VITE_BETA_APPLICATION_URL`. Once a seller is approved in the response sheet, their email is added to the Supabase allowlist and the approval message is sent through WhatsApp.
 
-For the current beta, WarungFlow intentionally does not include a public admin panel. Intake review, batch approval, and notification tracking happen in Google Sheet so the process can stay lightweight while the product is still learning from early users.
+For the current beta, Warungify intentionally does not include a public admin panel. Intake review, batch approval, and notification tracking happen in Google Sheet so the process can stay lightweight while the product is still learning from early users.

@@ -11,7 +11,7 @@ import { isSupabaseConfigured } from '../lib/supabaseClient';
 import { getFriendlyErrorMessage } from '../lib/errors';
 
 type AuthMode = 'login' | 'signup' | 'forgot' | 'reset';
-const PASSWORD_RECOVERY_KEY = 'warungflow_password_recovery';
+const PASSWORD_RECOVERY_KEY = 'warungify_password_recovery';
 
 interface LoginViewProps {
   onLoginSuccess: (email: string) => void;
@@ -45,7 +45,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPassword
   }[mode];
 
   const subtitle = {
-    login: 'Login untuk masuk ke workspace WarungFlow Anda.',
+    login: 'Login untuk masuk ke workspace Warungify Anda.',
     signup: 'Daftar akun dan verifikasi email sebelum masuk dashboard.',
     forgot: 'Masukkan email akun Anda untuk menerima link reset password.',
     reset: 'Masukkan password baru untuk mengamankan akun Anda.',
@@ -91,7 +91,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPassword
       }
 
       if (isLogin) {
-        sessionStorage.removeItem('warungflow_email_confirm_redirect');
+        sessionStorage.removeItem('warungify_email_confirm_redirect');
         if (window.location.search.includes('auth=confirm')) {
           window.history.replaceState(null, '', `${window.location.pathname}#/login`);
         }
@@ -135,12 +135,12 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPassword
         <div className="max-w-md relative z-10 space-y-8">
           <div className="flex items-center gap-3">
             <img
-              src="/Logo-warungflow.png"
-              alt="WarungFlow Logo"
+              src="/Logo-warungify.png"
+              alt="Warungify Logo"
               className="w-12 h-12 object-contain rounded-2xl"
             />
             <div>
-              <h1 className="text-xl font-bold text-white tracking-tight leading-none">WarungFlow</h1>
+              <h1 className="text-xl font-bold text-white tracking-tight leading-none">Warungify</h1>
               <span className="text-[10px] text-emerald-400/80 font-semibold tracking-wider uppercase mt-1 inline-block">Workspace</span>
             </div>
           </div>
@@ -236,7 +236,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPassword
                   <input
                     type="email"
                     required
-                    placeholder="owner@warungflow.app"
+                    placeholder="owner@warungify.app"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     disabled={isLoading}
