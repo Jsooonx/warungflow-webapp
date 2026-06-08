@@ -103,3 +103,5 @@ Before opening a beta batch, the production database must include the latest sch
 The landing page points applicants to the beta form through `VITE_BETA_APPLICATION_URL`. Once a seller is approved in the response sheet, their email is added to the Supabase allowlist and the approval message is sent through WhatsApp.
 
 For the current beta, Warungify intentionally does not include a public admin panel. Intake review, batch approval, and notification tracking happen in Google Sheet so the process can stay lightweight while the product is still learning from early users.
+
+Made by Jsooonx | 2026
