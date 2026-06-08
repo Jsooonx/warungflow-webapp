@@ -18,6 +18,8 @@ interface SidebarProps {
   onLogoutClick?: () => void;
   userName?: string;
   userEmail?: string;
+  lang: 'id' | 'en';
+  setLang: (lang: 'id' | 'en') => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ 
@@ -27,12 +29,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onLogoutClick,
   userName = 'Workspace User',
   userEmail = 'Account active',
+  lang,
+  setLang,
 }) => {
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'orders', label: 'Orders', icon: ShoppingCart },
-    { id: 'customers', label: 'Customers', icon: Users },
-    { id: 'templates', label: 'WhatsApp Templates', icon: MessageSquare },
+    { id: 'dashboard', label: lang === 'id' ? 'Dashboard' : 'Dashboard', icon: LayoutDashboard },
+    { id: 'orders', label: lang === 'id' ? 'Order' : 'Orders', icon: ShoppingCart },
+    { id: 'customers', label: lang === 'id' ? 'Pelanggan' : 'Customers', icon: Users },
+    { id: 'templates', label: lang === 'id' ? 'Template WhatsApp' : 'WhatsApp Templates', icon: MessageSquare },
   ];
 
   return (
@@ -59,7 +63,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           className="group w-full h-10 px-4 rounded-lg border border-transparent bg-emerald-600 hover:bg-white active:bg-emerald-50 text-white hover:text-emerald-700 text-xs font-semibold flex items-center justify-center gap-2 transition-all duration-500 shadow-sm cursor-pointer"
         >
           <PlusCircle className="w-4 h-4 transition-transform duration-500 group-hover:rotate-90" />
-          <RollingText compact>Create New Order</RollingText>
+          <RollingText compact>{lang === 'id' ? 'Buat Order Baru' : 'Create New Order'}</RollingText>
         </button>
       </div>
 
@@ -94,20 +98,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="flex items-center justify-between text-[11px] mb-1.5">
             <span className="text-slate-500 font-medium flex items-center gap-1.5">
               <ShieldCheck className="w-3 h-3 text-emerald-500" />
-              Secure Workspace
+              {lang === 'id' ? 'Workspace Aman' : 'Secure Workspace'}
             </span>
-            <span className="text-emerald-700 font-semibold">Active</span>
+            <span className="text-emerald-700 font-semibold">{lang === 'id' ? 'Aktif' : 'Active'}</span>
           </div>
           <p className="text-[10px] text-slate-400 font-normal mt-2 leading-normal">
-            Auth and database rows are scoped to the signed-in account.
+            {lang === 'id' 
+              ? 'Data database dan login aman dibatasi hanya untuk akun Anda.' 
+              : 'Auth and database rows are scoped to the signed-in account.'}
           </p>
         </div>
       </div>
 
       {/* User Footer Profile */}
       <div className="px-4 py-3 border-t border-slate-100 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5 overflow-hidden">
-          <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-xs text-slate-600 uppercase border border-slate-200">
+        <div className="flex items-center gap-2.5 overflow-hidden min-w-0">
+          <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-xs text-slate-600 uppercase border border-slate-200 shrink-0">
             {(userName || userEmail || 'U').trim().charAt(0)}
           </div>
           <div className="overflow-hidden">
@@ -115,13 +121,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <p className="text-[10px] text-slate-400 truncate mt-1">{userEmail}</p>
           </div>
         </div>
-        <button 
-          title="Logout"
-          onClick={onLogoutClick}
-          className="p-1.5 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
-        >
-          <LogOut className="w-4 h-4" />
-        </button>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            onClick={() => setLang(lang === 'id' ? 'en' : 'id')}
+            className="px-1.5 py-0.5 rounded border border-slate-200 text-[9px] uppercase font-mono tracking-tight text-slate-400 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-pointer"
+          >
+            <RollingText compact>{lang}</RollingText>
+          </button>
+          <button 
+            title="Logout"
+            onClick={onLogoutClick}
+            className="p-1.5 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
+        </div>
       </div>
     </aside>
   );

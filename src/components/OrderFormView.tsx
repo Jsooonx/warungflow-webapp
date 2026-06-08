@@ -21,6 +21,7 @@ interface OrderFormViewProps {
   }, options?: { invoiceAction?: 'copy' | 'send' }) => void | Promise<void>;
   onCancel: () => void;
   onFormatCopied: () => void;
+  lang?: 'id' | 'en';
 }
 
 const parsePastedText = (text: string) => {
@@ -88,7 +89,8 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
   orders = [],
   onSave,
   onCancel,
-  onFormatCopied
+  onFormatCopied,
+  lang = 'id'
 }) => {
   const [customerName, setCustomerName] = useState('');
   const [whatsappNumber, setWhatsappNumber] = useState('');
@@ -192,12 +194,12 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
   }, [orderToEdit]);
 
   const parsedLabels: Record<ParsedField, string> = {
-    customerName: 'Name parsed',
-    whatsappNumber: 'Phone parsed',
-    productName: 'Product parsed',
-    quantity: 'Qty parsed',
-    totalPrice: 'Price parsed',
-    notes: 'Notes parsed',
+    customerName: lang === 'id' ? 'Nama terdeteksi' : 'Name parsed',
+    whatsappNumber: lang === 'id' ? 'Telepon terdeteksi' : 'Phone parsed',
+    productName: lang === 'id' ? 'Produk terdeteksi' : 'Product parsed',
+    quantity: lang === 'id' ? 'Qty terdeteksi' : 'Qty parsed',
+    totalPrice: lang === 'id' ? 'Harga terdeteksi' : 'Price parsed',
+    notes: lang === 'id' ? 'Catatan terdeteksi' : 'Notes parsed',
   };
 
   const getParsedDelay = (field: ParsedField) => `${Math.max(parsedFields.indexOf(field), 0) * 80}ms`;
@@ -228,15 +230,23 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
   // Basic validation rules
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-    if (!customerName.trim()) newErrors.customerName = 'Customer name is required';
-    if (!whatsappNumber.trim()) {
-      newErrors.whatsappNumber = 'WhatsApp number is required';
-    } else if (!/^[0-9+() -]{7,20}$/.test(whatsappNumber)) {
-      newErrors.whatsappNumber = 'Enter a valid phone number (digits/spaces/dashes)';
+    if (!customerName.trim()) {
+      newErrors.customerName = lang === 'id' ? 'Nama pelanggan wajib diisi' : 'Customer name is required';
     }
-    if (!productName.trim()) newErrors.productName = 'Product name is required';
-    if (quantity <= 0) newErrors.quantity = 'Quantity must be at least 1';
-    if (totalPrice < 0) newErrors.totalPrice = 'Price cannot be negative';
+    if (!whatsappNumber.trim()) {
+      newErrors.whatsappNumber = lang === 'id' ? 'Nomor WhatsApp wajib diisi' : 'WhatsApp number is required';
+    } else if (!/^[0-9+() -]{7,20}$/.test(whatsappNumber)) {
+      newErrors.whatsappNumber = lang === 'id' ? 'Masukkan nomor telepon yang valid (angka/spasi/tanda hubung)' : 'Enter a valid phone number (digits/spaces/dashes)';
+    }
+    if (!productName.trim()) {
+      newErrors.productName = lang === 'id' ? 'Nama produk wajib diisi' : 'Product name is required';
+    }
+    if (quantity <= 0) {
+      newErrors.quantity = lang === 'id' ? 'Jumlah minimal 1' : 'Quantity must be at least 1';
+    }
+    if (totalPrice < 0) {
+      newErrors.totalPrice = lang === 'id' ? 'Harga tidak boleh negatif' : 'Price cannot be negative';
+    }
 
     setErrors(newErrors);
     return {
@@ -296,10 +306,10 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
         </button>
         <div>
           <h2 className="text-xl font-bold text-slate-900 tracking-tight">
-            {orderToEdit ? `Edit Order #${orderToEdit.orderNumber}` : 'Create New Order'}
+            {orderToEdit ? (lang === 'id' ? `Edit Order #${orderToEdit.orderNumber}` : `Edit Order #${orderToEdit.orderNumber}`) : (lang === 'id' ? 'Buat Order Baru' : 'Create New Order')}
           </h2>
           <p className="text-xs text-slate-400 mt-1">
-            {orderToEdit ? 'Modify order status, shipping code, or client details.' : 'Input order records from sales chats.'}
+            {orderToEdit ? (lang === 'id' ? 'Ubah status order, nomor resi kurir, atau detail pelanggan.' : 'Modify order status, shipping code, or client details.') : (lang === 'id' ? 'Masukkan data pesanan dari chat penjualan.' : 'Input order records from sales chats.')}
           </p>
         </div>
       </div>
@@ -309,16 +319,16 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
         <div className="premium-card p-5 max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-5 bg-emerald-50/5/5">
           <div className="space-y-2">
             <label className="text-xs font-bold text-emerald-800 uppercase tracking-wider block">
-              Magic Paste / Auto-Fill from Chat
+              {lang === 'id' ? 'Tempel Ajaib / Isi Otomatis dari Chat' : 'Magic Paste / Auto-Fill from Chat'}
             </label>
             <p className="text-[11px] text-slate-400">
-              Paste the customer's text order format here to automatically extract details and populate the form.
+              {lang === 'id' ? 'Tempel teks format order pelanggan di sini untuk mengekstrak detail dan mengisi formulir secara otomatis.' : 'Paste the customer\'s text order format here to automatically extract details and populate the form.'}
             </p>
             <textarea
               value={pasteInput}
               onChange={handlePasteChange}
               rows={4}
-              placeholder="Paste chat message here...&#10;e.g.&#10;Nama: Pelanggan Baru&#10;WhatsApp: 08xxxxxxxxxx&#10;Produk: Paket Produk&#10;Total Harga: 180000"
+              placeholder={lang === 'id' ? 'Tempel pesan chat di sini...\nmisalnya:\nNama: Pelanggan Baru\nWhatsApp: 08xxxxxxxxxx\nProduk: Paket Produk\nTotal Harga: 180000' : 'Paste chat message here...\ne.g.\nNama: Pelanggan Baru\nWhatsApp: 08xxxxxxxxxx\nProduk: Paket Produk\nTotal Harga: 180000'}
               className="w-full p-3 border border-slate-200 bg-slate-50/50 rounded-lg text-xs transition-colors focus:bg-white focus:border-emerald-500 focus:outline-hidden resize-none h-28"
             />
             {parsedFields.length > 0 && (
@@ -339,10 +349,10 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
           <div className="space-y-2.5 flex flex-col justify-between">
             <div>
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                Standard Order Format Template
+                {lang === 'id' ? 'Template Format Order Standar' : 'Standard Order Format Template'}
               </span>
               <p className="text-[11px] text-slate-400 mt-1">
-                Copy and send this format to your customers so they can fill it out, making parsing 100% accurate.
+                {lang === 'id' ? 'Salin dan kirim format ini ke pelanggan Anda agar pengisian otomatis 100% akurat.' : 'Copy and send this format to your customers so they can fill it out, making parsing 100% accurate.'}
               </p>
               <div className="bg-slate-50 border border-slate-100 rounded-lg p-2.5 font-mono text-[10px] text-slate-500 mt-2 whitespace-pre-line leading-relaxed">
                 {formatTemplate}
@@ -358,7 +368,7 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
                   : 'bg-white border-transparent text-slate-600 hover:bg-slate-950 hover:text-white shadow-xs'
               }`}
             >
-              <RollingText compact>{copiedFormat ? 'Format Copied!' : 'Copy Blank Format'}</RollingText>
+              <RollingText compact>{lang === 'id' ? (copiedFormat ? 'Format Disalin!' : 'Salin Format Kosong') : (copiedFormat ? 'Format Copied!' : 'Copy Blank Format')}</RollingText>
             </button>
           </div>
         </div>
@@ -373,13 +383,13 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
           {/* Section 1: Customer Info */}
           <div className="space-y-5">
             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">
-              Customer Information
+              {lang === 'id' ? 'Informasi Pelanggan' : 'Customer Information'}
             </h3>
 
             {/* Customer Name */}
             <div className="space-y-1.5">
               <label htmlFor="customerName" className="text-xs font-semibold text-slate-700">
-                Customer Name
+                {lang === 'id' ? 'Nama Pelanggan' : 'Customer Name'}
               </label>
               <input
                 id="customerName"
@@ -405,7 +415,7 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
             {/* WhatsApp Number */}
             <div className="space-y-1.5">
               <label htmlFor="whatsappNumber" className="text-xs font-semibold text-slate-700">
-                WhatsApp Phone Number
+                {lang === 'id' ? 'Nomor WhatsApp' : 'WhatsApp Phone Number'}
               </label>
               <input
                 id="whatsappNumber"
@@ -424,7 +434,7 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
                 style={getParsedStyle('whatsappNumber')}
               />
               <span className="text-[10px] text-slate-400 block font-normal leading-normal">
-                Use local formatting (08...) or international (62...).
+                {lang === 'id' ? 'Gunakan format lokal (08...) atau internasional (62...).' : 'Use local formatting (08...) or international (62...).'}
               </span>
               {errors.whatsappNumber && (
                 <span className="text-[10px] text-rose-600 font-semibold mt-1 block">{errors.whatsappNumber}</span>
@@ -434,14 +444,14 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
             {/* Notes / Address */}
             <div className="space-y-1.5">
               <label htmlFor="notes" className="text-xs font-semibold text-slate-700">
-                Notes & Shipping Address
+                {lang === 'id' ? 'Catatan & Alamat Pengiriman' : 'Notes & Shipping Address'}
               </label>
               <textarea
                 id="notes"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={4}
-                placeholder="Shipping details, card greeting message, custom product requests..."
+                placeholder={lang === 'id' ? 'Detail pengiriman, pesan kartu ucapan, permintaan khusus...' : 'Shipping details, card greeting message, custom product requests...'}
                 className={`w-full p-3 border border-slate-200 bg-slate-50/50 rounded-lg text-xs transition-colors focus:bg-white focus:border-emerald-500 focus:outline-hidden resize-none ${getParsedClass('notes')}`}
                 style={getParsedStyle('notes')}
               />
@@ -451,13 +461,13 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
           {/* Section 2: Order Info */}
           <div className="space-y-5">
             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">
-              Order Details
+              {lang === 'id' ? 'Detail Order' : 'Order Details'}
             </h3>
 
             {/* Product Name */}
             <div className="space-y-1.5">
               <label htmlFor="productName" className="text-xs font-semibold text-slate-700">
-                Product Name
+                {lang === 'id' ? 'Nama Produk' : 'Product Name'}
               </label>
               <input
                 id="productName"
@@ -484,7 +494,7 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label htmlFor="quantity" className="text-xs font-semibold text-slate-700">
-                  Quantity
+                  {lang === 'id' ? 'Jumlah (Qty)' : 'Quantity'}
                 </label>
                 <input
                   id="quantity"
@@ -509,7 +519,7 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
 
               <div className="space-y-1.5">
                 <label htmlFor="totalPrice" className="text-xs font-semibold text-slate-700">
-                  Total Price (Rp)
+                  {lang === 'id' ? 'Total Harga (Rp)' : 'Total Price (Rp)'}
                 </label>
                 <input
                   id="totalPrice"
@@ -536,7 +546,7 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
             {/* Status Dropdown */}
             <div className="space-y-1.5">
               <label htmlFor="status" className="text-xs font-semibold text-slate-700">
-                Order Status
+                {lang === 'id' ? 'Status Order' : 'Order Status'}
               </label>
               <select
                 id="status"
@@ -544,19 +554,19 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
                 onChange={(e) => setStatus(e.target.value as OrderStatus)}
                 className="w-full h-10 px-3 border border-slate-200 bg-slate-50/50 rounded-lg text-xs outline-hidden focus:bg-white focus:border-emerald-500 cursor-pointer"
               >
-                <option value="pending_payment">Pending Payment (Unpaid)</option>
-                <option value="paid">Paid</option>
-                <option value="packing">Packing</option>
-                <option value="shipped">Shipped</option>
-                <option value="done">Done (Delivered)</option>
-                <option value="cancelled">Cancelled</option>
+                <option value="pending_payment">{lang === 'id' ? 'Menunggu Pembayaran (Belum Lunas)' : 'Pending Payment (Unpaid)'}</option>
+                <option value="paid">{lang === 'id' ? 'Lunas' : 'Paid'}</option>
+                <option value="packing">{lang === 'id' ? 'Dikemas' : 'Packing'}</option>
+                <option value="shipped">{lang === 'id' ? 'Dikirim' : 'Shipped'}</option>
+                <option value="done">{lang === 'id' ? 'Selesai (Diterima)' : 'Done (Delivered)'}</option>
+                <option value="cancelled">{lang === 'id' ? 'Dibatalkan' : 'Cancelled'}</option>
               </select>
             </div>
 
             {/* Tracking Number (Optional) */}
             <div className="space-y-1.5">
               <label htmlFor="trackingNumber" className="text-xs font-semibold text-slate-700">
-                Courier Tracking Code (Optional)
+                {lang === 'id' ? 'Kode Resi Kurir (Opsional)' : 'Courier Tracking Code (Optional)'}
               </label>
               <input
                 id="trackingNumber"
@@ -576,9 +586,13 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
                       <FileText className="h-3.5 w-3.5" />
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-slate-900">Invoice ready</p>
+                      <p className="text-xs font-bold text-slate-900">
+                        {lang === 'id' ? 'Invoice siap' : 'Invoice ready'}
+                      </p>
                       <p className="text-[10px] text-slate-500 mt-0.5 leading-normal">
-                        Save this order and immediately copy or send the invoice to buyer WhatsApp.
+                        {lang === 'id' 
+                          ? 'Simpan order ini dan langsung salin atau kirim invoice ke WhatsApp pembeli.' 
+                          : 'Save this order and immediately copy or send the invoice to buyer WhatsApp.'}
                       </p>
                     </div>
                   </div>
@@ -587,24 +601,26 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
                 <div className="rounded-lg border border-blue-100 bg-white/70 p-3 text-[10px] text-slate-600">
                   <div className="flex items-center gap-1.5 font-bold text-slate-900 mb-2">
                     <MessageSquare className="h-3 w-3 text-blue-600" />
-                    WhatsApp invoice preview
+                    {lang === 'id' ? 'Pratinjau invoice WhatsApp' : 'WhatsApp invoice preview'}
                   </div>
                   <dl className="grid grid-cols-[78px_1fr] gap-x-2 gap-y-1">
-                    <dt className="text-slate-400">Order</dt>
+                    <dt className="text-slate-400">{lang === 'id' ? 'Order' : 'Order'}</dt>
                     <dd className="font-semibold text-slate-700">{invoicePreviewOrder.orderNumber}</dd>
-                    <dt className="text-slate-400">Invoice</dt>
+                    <dt className="text-slate-400">{lang === 'id' ? 'Invoice' : 'Invoice'}</dt>
                     <dd className="font-semibold text-slate-700">{getInvoiceId(invoicePreviewOrder, orders)}</dd>
-                    <dt className="text-slate-400">Buyer</dt>
+                    <dt className="text-slate-400">{lang === 'id' ? 'Pembeli' : 'Buyer'}</dt>
                     <dd className="font-semibold text-slate-700">{invoicePreviewOrder.customerName}</dd>
-                    <dt className="text-slate-400">Product</dt>
+                    <dt className="text-slate-400">{lang === 'id' ? 'Produk' : 'Product'}</dt>
                     <dd className="font-semibold text-slate-700">{invoicePreviewOrder.productName} x{invoicePreviewOrder.quantity}</dd>
-                    <dt className="text-slate-400">Total</dt>
+                    <dt className="text-slate-400">{lang === 'id' ? 'Total' : 'Total'}</dt>
                     <dd className="font-semibold text-slate-700">Rp {invoicePreviewOrder.totalPrice.toLocaleString('id-ID')}</dd>
-                    <dt className="text-slate-400">Date</dt>
+                    <dt className="text-slate-400">{lang === 'id' ? 'Tanggal' : 'Date'}</dt>
                     <dd className="font-semibold text-slate-700">{formatInvoiceDate(invoicePreviewOrder.createdAt)}</dd>
                   </dl>
                   <details className="mt-2">
-                    <summary className="cursor-pointer font-bold text-blue-700">View message text</summary>
+                    <summary className="cursor-pointer font-bold text-blue-700">
+                      {lang === 'id' ? 'Lihat teks pesan' : 'View message text'}
+                    </summary>
                     <pre className="mt-2 whitespace-pre-wrap rounded-md bg-slate-50 p-2 font-sans leading-relaxed text-slate-500">
                       {compileInvoiceText(invoicePreviewOrder, orders)}
                     </pre>
@@ -619,7 +635,7 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
                     className="group h-9 rounded-lg bg-blue-600 text-white hover:bg-white hover:text-blue-700 text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all duration-500 shadow-xs cursor-pointer disabled:opacity-50 disabled:hover:bg-blue-600 disabled:hover:text-white"
                   >
                     <Send className="h-3.5 w-3.5 transition-transform duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                    <RollingText compact>Send via WA</RollingText>
+                    <RollingText compact>{lang === 'id' ? 'Kirim via WA' : 'Send via WA'}</RollingText>
                   </button>
                   <button
                     type="button"
@@ -628,7 +644,7 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
                     className="group h-9 rounded-lg bg-white text-slate-700 hover:bg-slate-950 hover:text-white text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all duration-500 shadow-xs cursor-pointer disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-slate-700"
                   >
                     <Copy className="h-3.5 w-3.5 transition-transform duration-500 group-hover:-translate-y-0.5" />
-                    <RollingText compact>Copy text</RollingText>
+                    <RollingText compact>{lang === 'id' ? 'Salin teks' : 'Copy text'}</RollingText>
                   </button>
                 </div>
               </div>
@@ -643,7 +659,7 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
             onClick={onCancel}
             className="group h-10 px-5 rounded-lg border border-transparent bg-white text-slate-600 hover:bg-slate-950 hover:text-white text-xs font-semibold transition-all duration-500 cursor-pointer shadow-xs"
           >
-            <RollingText compact>Cancel</RollingText>
+            <RollingText compact>{lang === 'id' ? 'Batal' : 'Cancel'}</RollingText>
           </button>
           
           <button
@@ -656,7 +672,7 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
             ) : (
               <Check className="w-4 h-4 transition-transform duration-500 group-hover:scale-110" />
             )}
-            <RollingText compact>Save Order Details</RollingText>
+            <RollingText compact>{lang === 'id' ? 'Simpan Detail Order' : 'Save Order Details'}</RollingText>
           </button>
         </div>
 

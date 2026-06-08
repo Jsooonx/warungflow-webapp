@@ -15,16 +15,22 @@ import backgroundHeroImg from '../assets/background_hero.png';
 interface LandingPageViewProps {
   onGetStartedClick: () => void;
   onLoginClick: () => void;
+  lang: 'id' | 'en';
+  setLang: (lang: 'id' | 'en') => void;
 }
 
 const NavRollingText: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <RollingText compact>{children}</RollingText>
 );
 
-export const LandingPageView: React.FC<LandingPageViewProps> = ({ onGetStartedClick, onLoginClick }) => {
+export const LandingPageView: React.FC<LandingPageViewProps> = ({
+  onGetStartedClick,
+  onLoginClick,
+  lang,
+  setLang,
+}) => {
   const [activeTab, setActiveTab] = useState(0);
   const [isNavHovered, setIsNavHovered] = useState(false);
-  const [lang, setLang] = useState<'id' | 'en'>('id');
   const duration = 5000; // 5 seconds
 
   // Initialize Lenis Smooth Scroll

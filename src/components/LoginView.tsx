@@ -17,9 +17,17 @@ interface LoginViewProps {
   onLoginSuccess: (email: string) => void;
   onPasswordResetComplete?: () => void;
   onBackToLanding: () => void;
+  lang: 'id' | 'en';
+  setLang: (lang: 'id' | 'en') => void;
 }
 
-export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPasswordResetComplete, onBackToLanding }) => {
+export const LoginView: React.FC<LoginViewProps> = ({ 
+  onLoginSuccess, 
+  onPasswordResetComplete, 
+  onBackToLanding,
+  lang,
+  setLang,
+}) => {
   const initialMode = useMemo<AuthMode>(() => (
     window.location.hash.includes('mode=reset') || sessionStorage.getItem(PASSWORD_RECOVERY_KEY) === 'true' ? 'reset' : 'login'
   ), []);
@@ -38,24 +46,24 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPassword
   const isReset = mode === 'reset';
 
   const title = {
-    login: 'Selamat Datang',
-    signup: 'Buat Akun Baru',
-    forgot: 'Reset Password',
-    reset: 'Password Baru',
+    login: lang === 'id' ? 'Selamat Datang' : 'Welcome Back',
+    signup: lang === 'id' ? 'Buat Akun Baru' : 'Create New Account',
+    forgot: lang === 'id' ? 'Reset Password' : 'Reset Password',
+    reset: lang === 'id' ? 'Password Baru' : 'New Password',
   }[mode];
 
   const subtitle = {
-    login: 'Login untuk masuk ke workspace Warungify Anda.',
-    signup: 'Daftar akun dan verifikasi email sebelum masuk dashboard.',
-    forgot: 'Masukkan email akun Anda untuk menerima link reset password.',
-    reset: 'Masukkan password baru untuk mengamankan akun Anda.',
+    login: lang === 'id' ? 'Login untuk masuk ke workspace Warungify Anda.' : 'Login to enter your Warungify workspace.',
+    signup: lang === 'id' ? 'Daftar akun dan verifikasi email sebelum masuk dashboard.' : 'Register an account and verify your email before entering the dashboard.',
+    forgot: lang === 'id' ? 'Masukkan email akun Anda untuk menerima link reset password.' : 'Enter your account email to receive a password reset link.',
+    reset: lang === 'id' ? 'Masukkan password baru untuk mengamankan akun Anda.' : 'Enter a new password to secure your account.',
   }[mode];
 
   const submitLabel = {
-    login: 'Masuk Workspace',
-    signup: 'Create Account',
-    forgot: 'Send Reset Link',
-    reset: 'Update Password',
+    login: lang === 'id' ? 'Masuk Workspace' : 'Enter Workspace',
+    signup: lang === 'id' ? 'Daftar Akun' : 'Create Account',
+    forgot: lang === 'id' ? 'Kirim Link Reset' : 'Send Reset Link',
+    reset: lang === 'id' ? 'Perbarui Password' : 'Update Password',
   }[mode];
 
   const resetMessages = () => {
@@ -73,10 +81,10 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPassword
 
   const validatePasswordMatch = () => {
     if ((isSignup || isReset) && password !== confirmPassword) {
-      throw new Error('Password confirmation does not match.');
+      throw new Error(lang === 'id' ? 'Konfirmasi password tidak cocok.' : 'Password confirmation does not match.');
     }
     if ((isSignup || isReset || isLogin) && password.length < 6) {
-      throw new Error('Password minimal 6 karakter.');
+      throw new Error(lang === 'id' ? 'Password minimal 6 karakter.' : 'Password must be at least 6 characters.');
     }
   };
 
@@ -87,7 +95,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPassword
 
     try {
       if (!isSupabaseConfigured) {
-        throw new Error('Supabase env belum dikonfigurasi. Isi VITE_SUPABASE_URL dan VITE_SUPABASE_ANON_KEY.');
+        throw new Error(lang === 'id' ? 'Supabase env belum dikonfigurasi. Isi VITE_SUPABASE_URL dan VITE_SUPABASE_ANON_KEY.' : 'Supabase env has not been configured. Fill in VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
       }
 
       if (isLogin) {
@@ -101,17 +109,17 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPassword
       } else if (isSignup) {
         validatePasswordMatch();
         await signUpWithEmail(email, password, fullName);
-        setNotice('Akun dibuat. Cek email Anda untuk verifikasi sebelum login.');
+        setNotice(lang === 'id' ? 'Akun dibuat. Cek email Anda untuk verifikasi sebelum login.' : 'Account created. Check your email for verification before logging in.');
         setPassword('');
         setConfirmPassword('');
         setMode('login');
       } else if (isForgot) {
         await sendPasswordReset(email);
-        setNotice('Link reset password sudah dikirim. Cek inbox email Anda.');
+        setNotice(lang === 'id' ? 'Link reset password sudah dikirim. Cek inbox email Anda.' : 'Password reset link sent. Check your email inbox.');
       } else if (isReset) {
         validatePasswordMatch();
         await updateCurrentUserPassword(password);
-        setNotice('Password berhasil diperbarui. Silakan login ulang jika diminta.');
+        setNotice(lang === 'id' ? 'Password berhasil diperbarui. Silakan login ulang jika diminta.' : 'Password updated successfully. Please log in again if prompted.');
         setPassword('');
         setConfirmPassword('');
         onPasswordResetComplete?.();
@@ -119,7 +127,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPassword
         setMode('login');
       }
     } catch (err) {
-      setError(getFriendlyErrorMessage(err, 'Auth request failed. Please check your email and password.'));
+      setError(getFriendlyErrorMessage(err, lang === 'id' ? 'Permintaan autentikasi gagal. Silakan periksa email dan password Anda.' : 'Auth request failed. Please check your email and password.', lang));
     } finally {
       setIsLoading(false);
     }
@@ -147,10 +155,14 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPassword
 
           <div className="space-y-4">
             <h2 className="text-3xl font-extrabold text-white tracking-tight leading-tight">
-              Kelola pesanan WhatsApp dengan akun dan database sungguhan.
+              {lang === 'id' 
+                ? 'Kelola pesanan WhatsApp dengan akun dan database sungguhan.' 
+                : 'Manage WhatsApp orders with real accounts and database.'}
             </h2>
             <p className="text-slate-400 text-sm leading-relaxed">
-              Auth, reset password, dan order database sekarang tersimpan per akun melalui Supabase.
+              {lang === 'id' 
+                ? 'Auth, reset password, dan order database sekarang tersimpan per akun melalui Supabase.' 
+                : 'Auth, password reset, and order database are now saved per account via Supabase.'}
             </p>
           </div>
 
@@ -160,8 +172,14 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPassword
                 <ShieldCheck className="w-3 h-3" />
               </div>
               <div>
-                <p className="font-semibold text-slate-200">Email verified account</p>
-                <p className="text-slate-400 mt-0.5">Signup publik dengan verifikasi email dan recovery password.</p>
+                <p className="font-semibold text-slate-200">
+                  {lang === 'id' ? 'Akun terverifikasi email' : 'Email verified account'}
+                </p>
+                <p className="text-slate-400 mt-0.5 font-normal leading-relaxed">
+                  {lang === 'id' 
+                    ? 'Pendaftaran publik dengan verifikasi email dan pemulihan password.' 
+                    : 'Public signup with email verification and password recovery.'}
+                </p>
               </div>
             </div>
             <div className="flex items-start gap-3 text-slate-300 text-xs">
@@ -169,8 +187,14 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPassword
                 <Database className="w-3 h-3" />
               </div>
               <div>
-                <p className="font-semibold text-slate-200">User-owned database</p>
-                <p className="text-slate-400 mt-0.5">Orders dan templates dipisahkan per akun dengan Supabase RLS.</p>
+                <p className="font-semibold text-slate-200">
+                  {lang === 'id' ? 'Database milik pengguna' : 'User-owned database'}
+                </p>
+                <p className="text-slate-400 mt-0.5 font-normal leading-relaxed">
+                  {lang === 'id' 
+                    ? 'Order dan template dipisahkan per akun dengan Supabase RLS.' 
+                    : 'Orders and templates are separated per account with Supabase RLS.'}
+                </p>
               </div>
             </div>
           </div>
@@ -179,14 +203,24 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPassword
 
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 md:p-16 bg-white overflow-y-auto">
         <div className="w-full max-w-sm space-y-6">
-          <button
-            type="button"
-            onClick={onBackToLanding}
-            className="group inline-flex h-9 items-center gap-2 rounded-xl bg-slate-50 px-3 text-[11px] font-bold text-slate-500 shadow-xs transition-all duration-500 hover:bg-slate-950 hover:text-white"
-          >
-            <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-500 group-hover:-translate-x-0.5" />
-            <RollingText compact>Back to landing page</RollingText>
-          </button>
+          <div className="flex items-center justify-between gap-4">
+            <button
+              type="button"
+              onClick={onBackToLanding}
+              className="group inline-flex h-9 items-center gap-2 rounded-xl bg-slate-50 px-3 text-[11px] font-bold text-slate-500 shadow-xs transition-all duration-500 hover:bg-slate-950 hover:text-white cursor-pointer"
+            >
+              <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-500 group-hover:-translate-x-0.5" />
+              <RollingText compact>{lang === 'id' ? 'Kembali ke beranda' : 'Back to landing page'}</RollingText>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setLang(lang === 'id' ? 'en' : 'id')}
+              className="px-2.5 py-1 rounded-lg border border-slate-200 text-[10px] uppercase font-mono tracking-tight text-slate-400 hover:text-slate-900 hover:bg-slate-50 transition-all cursor-pointer"
+            >
+              <RollingText compact>{lang}</RollingText>
+            </button>
+          </div>
 
           <div className="space-y-2">
             <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight">{title}</h3>
@@ -195,7 +229,9 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPassword
 
           {!isSupabaseConfigured && (
             <div className="p-3.5 bg-amber-50 border border-amber-200/70 rounded-xl text-[11px] font-semibold text-amber-800 leading-normal">
-              Supabase belum aktif. Isi `.env` dari `.env.example`, lalu restart dev server.
+              {lang === 'id' 
+                ? 'Supabase belum aktif. Isi `.env` dari `.env.example`, lalu restart dev server.' 
+                : 'Supabase is not active yet. Fill `.env` from `.env.example`, then restart dev server.'}
             </div>
           )}
 
@@ -207,7 +243,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPassword
 
           {notice && (
             <div className="p-3.5 bg-emerald-50 border border-emerald-200/60 rounded-xl text-[11px] font-semibold text-emerald-800 leading-normal flex gap-2">
-              <CheckCircle className="w-4 h-4 shrink-0" />
+              <CheckCircle className="w-4 h-4 shrink-0 text-emerald-600" />
               <span>{notice}</span>
             </div>
           )}
@@ -215,11 +251,11 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPassword
           <form onSubmit={handleSubmit} className="space-y-4">
             {isSignup && (
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Full Name</label>
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{lang === 'id' ? 'Nama Lengkap' : 'Full Name'}</label>
                 <input
                   type="text"
                   required
-                  placeholder="Nama bisnis / owner"
+                  placeholder={lang === 'id' ? 'Nama bisnis / owner' : 'Business / owner name'}
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   disabled={isLoading}
@@ -230,7 +266,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPassword
 
             {!isReset && (
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Email Address</label>
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{lang === 'id' ? 'Alamat Email' : 'Email Address'}</label>
                 <div className="relative">
                   <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
                   <input
@@ -249,14 +285,14 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPassword
             {!isForgot && (
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Password</label>
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{lang === 'id' ? 'Kata Sandi' : 'Password'}</label>
                   {isLogin && (
                     <button
                       type="button"
                       onClick={() => switchMode('forgot')}
                       className="group text-[10px] font-bold text-emerald-600 hover:text-emerald-700 cursor-pointer"
                     >
-                      <RollingText compact>Lupa Password?</RollingText>
+                      <RollingText compact>{lang === 'id' ? 'Lupa Password?' : 'Forgot Password?'}</RollingText>
                     </button>
                   )}
                 </div>
@@ -277,7 +313,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPassword
 
             {(isSignup || isReset) && (
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Confirm Password</label>
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{lang === 'id' ? 'Konfirmasi Kata Sandi' : 'Confirm Password'}</label>
                 <input
                   type="password"
                   required
@@ -309,23 +345,25 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess, onPassword
           <div className="border-t border-slate-100 pt-4 flex flex-wrap items-center justify-center gap-3 text-[11px] font-bold">
             {!isLogin && (
               <button type="button" onClick={() => switchMode('login')} className="group text-slate-500 hover:text-slate-950 cursor-pointer">
-                <RollingText compact>Back to login</RollingText>
+                <RollingText compact>{lang === 'id' ? 'Kembali ke login' : 'Back to login'}</RollingText>
               </button>
             )}
             {!isSignup && !isReset && (
               <button type="button" onClick={() => switchMode('signup')} className="group text-emerald-600 hover:text-emerald-700 cursor-pointer">
-                <RollingText compact>Create account</RollingText>
+                <RollingText compact>{lang === 'id' ? 'Buat akun' : 'Create account'}</RollingText>
               </button>
             )}
             {isLogin && (
-              <span className="text-slate-300">Email verification required</span>
+              <span className="text-slate-300">{lang === 'id' ? 'Verifikasi email diperlukan' : 'Email verification required'}</span>
             )}
           </div>
 
           <div className="p-3.5 bg-slate-50 border border-slate-100 rounded-xl flex items-start gap-3 select-none">
             <Sparkles className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
             <p className="text-[11px] leading-relaxed text-slate-500 font-medium">
-              Gunakan akun yang sudah diverifikasi agar data order tersimpan di database per user.
+              {lang === 'id' 
+                ? 'Gunakan akun yang sudah diverifikasi agar data order tersimpan di database per user.' 
+                : 'Use a verified account so that order data is saved in the database per user.'}
             </p>
           </div>
         </div>

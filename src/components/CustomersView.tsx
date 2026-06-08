@@ -6,11 +6,13 @@ import { CustomerDrawer } from './CustomerDrawer';
 interface CustomersViewProps {
   customers: Customer[];
   orders: Order[];
+  lang?: 'id' | 'en';
 }
 
 export const CustomersView: React.FC<CustomersViewProps> = ({
   customers,
-  orders
+  orders,
+  lang = 'id'
 }) => {
   const [search, setSearch] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
@@ -23,7 +25,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
   );
 
   const formatOrderDate = (dateString: string) => {
-    return new Intl.DateTimeFormat('id-ID', {
+    return new Intl.DateTimeFormat(lang === 'id' ? 'id-ID' : 'en-US', {
       weekday: 'long',
       day: '2-digit',
       month: 'long',
@@ -38,8 +40,8 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
       
       {/* Title */}
       <div>
-        <h2 className="text-xl font-bold text-slate-900 tracking-tight">Customer Directory</h2>
-        <p className="text-xs text-slate-400 mt-1">Aggregated clients history compile automatically from orders.</p>
+        <h2 className="text-xl font-bold text-slate-900 tracking-tight">{lang === 'id' ? 'Direktori Pelanggan' : 'Customer Directory'}</h2>
+        <p className="text-xs text-slate-400 mt-1">{lang === 'id' ? 'Riwayat klien teragregasi secara otomatis dari data pesanan.' : 'Aggregated clients history compile automatically from orders.'}</p>
       </div>
 
       {/* Toolbar Search */}
@@ -48,7 +50,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
           <input
             type="text"
-            placeholder="Search by customer name or phone..."
+            placeholder={lang === 'id' ? 'Cari nama pelanggan atau telepon...' : 'Search by customer name or phone...'}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full h-9 pl-9 pr-4 bg-slate-50 border border-slate-200/80 rounded-lg text-xs focus:bg-white focus:border-emerald-500 focus:outline-hidden transition-all"
@@ -62,11 +64,11 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50/70 border-b border-slate-200 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                <th className="py-3 px-6">Customer Name</th>
-                <th className="py-3 px-6">WhatsApp Phone</th>
-                <th className="py-3 px-6 w-36">Total Orders</th>
-                <th className="py-3 px-6 w-44">Total Spent</th>
-                <th className="py-3 px-6 w-56">Last Order Date</th>
+                <th className="py-3 px-6">{lang === 'id' ? 'Nama Pelanggan' : 'Customer Name'}</th>
+                <th className="py-3 px-6">{lang === 'id' ? 'Telepon WhatsApp' : 'WhatsApp Phone'}</th>
+                <th className="py-3 px-6 w-36">{lang === 'id' ? 'Total Order' : 'Total Orders'}</th>
+                <th className="py-3 px-6 w-44">{lang === 'id' ? 'Total Belanja' : 'Total Spent'}</th>
+                <th className="py-3 px-6 w-56">{lang === 'id' ? 'Tanggal Order Terakhir' : 'Last Order Date'}</th>
                 <th className="py-3 px-6 w-16 text-right"></th>
               </tr>
             </thead>
@@ -74,7 +76,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
               {filteredCustomers.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-12 text-center text-slate-400 text-xs">
-                    No customers registered yet.
+                    {lang === 'id' ? 'Belum ada pelanggan terdaftar.' : 'No customers registered yet.'}
                   </td>
                 </tr>
               ) : (
@@ -103,7 +105,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
 
                     {/* Total orders */}
                     <td className="py-3.5 px-6 font-bold text-slate-800">
-                      {customer.totalOrders} {customer.totalOrders > 1 ? 'orders' : 'order'}
+                      {customer.totalOrders} {lang === 'id' ? 'order' : (customer.totalOrders > 1 ? 'orders' : 'order')}
                     </td>
 
                     {/* Spent */}
@@ -133,6 +135,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
         customer={selectedCustomer}
         orders={orders}
         onClose={() => setSelectedCustomer(null)}
+        lang={lang}
       />
     </div>
   );

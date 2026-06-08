@@ -9,6 +9,7 @@ import { TemplatesView } from './components/TemplatesView';
 import { LoginView } from './components/LoginView';
 import { LandingPageView } from './components/LandingPageView';
 import { PendingApprovalView } from './components/PendingApprovalView';
+import { RollingText } from './components/RollingText';
 import { CheckCircle, LayoutDashboard, LogOut, MessageSquare, PlusCircle, ShoppingCart, Users, X } from 'lucide-react';
 import { useHashRouter } from './hooks/useHashRouter';
 import type { Order, OrderStatus } from './types';
@@ -83,6 +84,8 @@ interface MobileAppShellProps {
   onCreateOrderClick: () => void;
   onLogoutClick: () => void;
   userName: string;
+  lang: 'id' | 'en';
+  onLangToggle: () => void;
   children: React.ReactNode;
 }
 
@@ -92,13 +95,15 @@ const MobileAppShell = ({
   onCreateOrderClick,
   onLogoutClick,
   userName,
+  lang,
+  onLangToggle,
   children,
 }: MobileAppShellProps) => {
   const items = [
-    { id: 'dashboard', label: 'Home', icon: LayoutDashboard },
-    { id: 'orders', label: 'Orders', icon: ShoppingCart },
-    { id: 'customers', label: 'Customers', icon: Users },
-    { id: 'templates', label: 'Templates', icon: MessageSquare },
+    { id: 'dashboard', label: lang === 'id' ? 'Home' : 'Home', icon: LayoutDashboard },
+    { id: 'orders', label: lang === 'id' ? 'Order' : 'Orders', icon: ShoppingCart },
+    { id: 'customers', label: lang === 'id' ? 'Pelanggan' : 'Customers', icon: Users },
+    { id: 'templates', label: lang === 'id' ? 'Template' : 'Templates', icon: MessageSquare },
   ];
 
   return (
@@ -112,6 +117,12 @@ const MobileAppShell = ({
           </div>
         </div>
         <div className="flex items-center gap-1.5">
+          <button
+            onClick={onLangToggle}
+            className="px-1.5 py-0.5 rounded border border-slate-200 text-[9px] uppercase font-mono tracking-tight text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+          >
+            <RollingText compact>{lang}</RollingText>
+          </button>
           <button
             onClick={onCreateOrderClick}
             className="h-8 w-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center shadow-xs"
@@ -186,6 +197,15 @@ function App() {
 
   const { path, params, navigate } = useHashRouter();
   const isPasswordResetRoute = (path === 'login' && window.location.hash.includes('mode=reset')) || isPasswordRecovery;
+
+  const [lang, setLang] = useState<'id' | 'en'>(() => {
+    return (localStorage.getItem('warungify_lang') as 'id' | 'en') || 'id';
+  });
+
+  const handleSetLang = (newLang: 'id' | 'en') => {
+    setLang(newLang);
+    localStorage.setItem('warungify_lang', newLang);
+  };
 
   const [isPageLoading, setIsPageLoading] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -360,7 +380,7 @@ function App() {
   }, []);
 
   const handleLoginSuccess = (email: string) => {
-    showToast('Login berhasil', `Selamat datang kembali, ${email}!`);
+    showToast(lang === 'id' ? 'Login berhasil' : 'Login successful', lang === 'id' ? `Selamat datang kembali, ${email}!` : `Welcome back, ${email}!`);
     startPageLoading(() => {
       loaderNavigationRef.current = true;
       navigate('dashboard');
@@ -368,18 +388,18 @@ function App() {
   };
 
   const handleLogout = async () => {
-    const confirmed = window.confirm('Apakah Anda yakin ingin keluar dari workspace?');
+    const confirmed = window.confirm(lang === 'id' ? 'Apakah Anda yakin ingin keluar dari workspace?' : 'Are you sure you want to log out of the workspace?');
     if (confirmed) {
       setIsLoggingOut(true);
       startPageLoading(() => {
         void signOut()
           .then(() => {
-            showToast('Logout berhasil', 'Sesi Anda telah diakhiri.');
+            showToast(lang === 'id' ? 'Logout berhasil' : 'Logout successful', lang === 'id' ? 'Sesi Anda telah diakhiri.' : 'Your session has been terminated.');
             loaderNavigationRef.current = true;
             navigate('landing');
           })
           .catch((error) => {
-            showToast('Logout gagal', error instanceof Error ? error.message : 'Sesi belum bisa diakhiri.');
+            showToast(lang === 'id' ? 'Logout gagal' : 'Logout failed', error instanceof Error ? error.message : (lang === 'id' ? 'Sesi belum bisa diakhiri.' : 'Could not terminate session.'));
           })
           .finally(() => {
             window.setTimeout(() => setIsLoggingOut(false), 300);
@@ -417,12 +437,12 @@ function App() {
         const updated = await updateOrder(orderToEdit.id, orderData);
         savedOrder = updated;
         markChangedOrder(updated.id, 'edit');
-        showToast('Order updated', `${updated.orderNumber} details saved.`);
+        showToast(lang === 'id' ? 'Order diperbarui' : 'Order updated', lang === 'id' ? `Detail ${updated.orderNumber} disimpan.` : `${updated.orderNumber} details saved.`);
       } else {
         const newOrder = await addOrder(orderData);
         savedOrder = newOrder;
         markChangedOrder(newOrder.id, 'create');
-        showToast('Order created', `${newOrder.orderNumber} has been added.`);
+        showToast(lang === 'id' ? 'Order dibuat' : 'Order created', lang === 'id' ? `${newOrder.orderNumber} berhasil ditambahkan.` : `${newOrder.orderNumber} has been added.`);
       }
       if (options?.invoiceAction && savedOrder.status === 'paid') {
         const invoiceOrders = [savedOrder, ...orders.filter((order) => order.id !== savedOrder.id)];
@@ -430,20 +450,29 @@ function App() {
           const result = await copyInvoiceAndOpenWhatsApp(savedOrder, invoiceOrders);
           await markInvoiceHandled(savedOrder.id);
           showToast(
-            result.copied ? 'Invoice sent via WhatsApp' : 'Invoice ready to paste',
+            result.copied 
+              ? (lang === 'id' ? 'Invoice dikirim via WhatsApp' : 'Invoice sent via WhatsApp') 
+              : (lang === 'id' ? 'Invoice siap ditempel' : 'Invoice ready to paste'),
             result.copied
-              ? `${savedOrder.orderNumber} invoice copied. Paste it in the WhatsApp chat that just opened.`
-              : `${savedOrder.orderNumber} chat opened, but clipboard access was blocked. Copy the invoice manually.`,
+              ? (lang === 'id' 
+                ? `Invoice ${savedOrder.orderNumber} disalin. Tempel di chat WhatsApp yang baru terbuka.` 
+                : `Invoice ${savedOrder.orderNumber} copied. Paste it in the WhatsApp chat that just opened.`)
+              : (lang === 'id' 
+                ? `Chat ${savedOrder.orderNumber} terbuka, tetapi akses clipboard diblokir. Salin invoice secara manual.` 
+                : `Chat ${savedOrder.orderNumber} opened, but clipboard access was blocked. Copy the invoice manually.`),
           );
         } else {
           await copyInvoiceText(savedOrder, invoiceOrders);
           await markInvoiceHandled(savedOrder.id);
-          showToast('Invoice text copied', `${savedOrder.orderNumber} invoice is ready to paste.`);
+          showToast(
+            lang === 'id' ? 'Teks invoice disalin' : 'Invoice text copied', 
+            lang === 'id' ? `Invoice ${savedOrder.orderNumber} siap ditempel.` : `Invoice ${savedOrder.orderNumber} is ready to paste.`
+          );
         }
       }
       navigate('orders');
     } catch (error) {
-      showToast('Save failed', getFriendlyErrorMessage(error, 'Unable to save order.'));
+      showToast(lang === 'id' ? 'Gagal menyimpan' : 'Save failed', getFriendlyErrorMessage(error, lang === 'id' ? 'Gagal menyimpan order.' : 'Unable to save order.', lang));
     }
   };
 
@@ -456,10 +485,10 @@ function App() {
       const order = orders.find((item) => item.id === id);
       const deleted = await deleteOrder(id);
       if (deleted) {
-        showToast('Order deleted', `${order?.orderNumber || id} removed from order logs.`);
+        showToast(lang === 'id' ? 'Order dihapus' : 'Order deleted', lang === 'id' ? `${order?.orderNumber || id} dihapus dari log order.` : `${order?.orderNumber || id} removed from order logs.`);
       }
     } catch (error) {
-      showToast('Delete failed', getFriendlyErrorMessage(error, 'Unable to delete order.'));
+      showToast(lang === 'id' ? 'Gagal menghapus' : 'Delete failed', getFriendlyErrorMessage(error, lang === 'id' ? 'Gagal menghapus order.' : 'Unable to delete order.', lang));
     }
   };
 
@@ -468,18 +497,28 @@ function App() {
       const updated = await updateOrder(id, { status });
       markChangedOrder(id, 'status');
       markSavedStatus(id);
-      showToast('Status updated', `${updated.orderNumber} is now ${status.replace('_', ' ')}.`);
+      const formattedStatus = status.replace('_', ' ');
+      showToast(
+        lang === 'id' ? 'Status diperbarui' : 'Status updated', 
+        lang === 'id' ? `${updated.orderNumber} sekarang ${formattedStatus}.` : `${updated.orderNumber} is now ${formattedStatus}.`
+      );
     } catch (error) {
-      showToast('Status failed', getFriendlyErrorMessage(error, 'Unable to update status.'));
+      showToast(lang === 'id' ? 'Gagal memperbarui status' : 'Status failed', getFriendlyErrorMessage(error, lang === 'id' ? 'Gagal memperbarui status.' : 'Unable to update status.', lang));
     }
   };
 
   const handleTemplateCopied = (label: string) => {
-    showToast('Template copied', `${label} is ready to paste.`);
+    showToast(
+      lang === 'id' ? 'Template disalin' : 'Template copied', 
+      lang === 'id' ? `${label} siap ditempel.` : `${label} is ready to paste.`
+    );
   };
 
   const handleWhatsAppCopied = (orderId: string) => {
-    showToast('WhatsApp message copied', `${orderId} message copied and chat opened.`);
+    showToast(
+      lang === 'id' ? 'Pesan WhatsApp disalin' : 'WhatsApp message copied', 
+      lang === 'id' ? `Pesan ${orderId} disalin dan chat dibuka.` : `${orderId} message copied and chat opened.`
+    );
   };
 
   const handleInvoiceCopied = (orderNumber: string, action: 'copy' | 'send', copied: boolean) => {
@@ -490,22 +529,31 @@ function App() {
 
     showToast(
       action === 'send'
-        ? (copied ? 'Invoice sent via WhatsApp' : 'Invoice ready to paste')
-        : 'Invoice text copied',
+        ? (copied 
+          ? (lang === 'id' ? 'Invoice dikirim via WhatsApp' : 'Invoice sent via WhatsApp') 
+          : (lang === 'id' ? 'Invoice siap ditempel' : 'Invoice ready to paste'))
+        : (lang === 'id' ? 'Teks invoice disalin' : 'Invoice text copied'),
       action === 'send'
         ? (copied
-          ? `${orderNumber} invoice copied. Paste it in the WhatsApp chat that just opened.`
-          : `${orderNumber} chat opened, but clipboard access was blocked. Copy the invoice manually.`)
-        : `${orderNumber} invoice is ready to paste.`,
+          ? (lang === 'id' 
+            ? `Invoice ${orderNumber} disalin. Tempel di chat WhatsApp yang baru terbuka.` 
+            : `Invoice ${orderNumber} copied. Paste it in the WhatsApp chat that just opened.`)
+          : (lang === 'id' 
+            ? `Chat ${orderNumber} terbuka, tetapi akses clipboard diblokir. Salin invoice secara manual.` 
+            : `Chat ${orderNumber} opened, but clipboard access was blocked. Copy the invoice manually.`))
+        : (lang === 'id' ? `Invoice ${orderNumber} siap ditempel.` : `Invoice ${orderNumber} is ready to paste.`),
     );
   };
 
   const handleImportLocalOrders = async () => {
     try {
       const imported = await importLocalOrders();
-      showToast('Local orders imported', `${imported.length} orders moved to Supabase.`);
+      showToast(
+        lang === 'id' ? 'Order lokal diimpor' : 'Local orders imported', 
+        lang === 'id' ? `${imported.length} order dipindahkan ke Supabase.` : `${imported.length} orders moved to Supabase.`
+      );
     } catch (error) {
-      showToast('Import failed', getFriendlyErrorMessage(error, 'Unable to import local orders.'));
+      showToast(lang === 'id' ? 'Gagal mengimpor' : 'Import failed', getFriendlyErrorMessage(error, lang === 'id' ? 'Gagal mengimpor order lokal.' : 'Unable to import local orders.', lang));
     }
   };
 
@@ -519,6 +567,7 @@ function App() {
           onSave={handleSaveOrder}
           onCancel={handleCancelForm}
           onFormatCopied={() => handleTemplateCopied('Blank order format')}
+          lang={lang}
         />
       );
     }
@@ -532,6 +581,7 @@ function App() {
             onEditOrder={handleEditClick}
             invoiceHandledOrderIds={invoiceHandledOrderIds}
             lastChangedOrder={lastChangedOrder}
+            lang={lang}
           />
         );
       case 'orders':
@@ -549,6 +599,7 @@ function App() {
             onUpdateStatus={handleUpdateStatus}
             onWhatsAppCopied={handleWhatsAppCopied}
             onInvoiceCopied={handleInvoiceCopied}
+            lang={lang}
           />
         );
       case 'customers':
@@ -556,6 +607,7 @@ function App() {
           <CustomersView
             customers={customers}
             orders={orders}
+            lang={lang}
           />
         );
       case 'templates':
@@ -563,6 +615,7 @@ function App() {
           <TemplatesView
             templates={templates}
             onTemplateCopied={handleTemplateCopied}
+            lang={lang}
           />
         );
       default:
@@ -580,7 +633,10 @@ function App() {
       window.open(betaApplicationUrl, '_blank', 'noopener,noreferrer');
       return;
     }
-    showToast('Form beta belum diset', 'Isi VITE_BETA_APPLICATION_URL untuk membuka pendaftaran beta.');
+    showToast(
+      lang === 'id' ? 'Form beta belum diatur' : 'Beta form not set', 
+      lang === 'id' ? 'Isi VITE_BETA_APPLICATION_URL untuk membuka pendaftaran beta.' : 'Fill VITE_BETA_APPLICATION_URL to open beta registration.'
+    );
     navigateWithLoading('login');
   };
 
@@ -596,11 +652,15 @@ function App() {
         onLoginSuccess={handleLoginSuccess}
         onPasswordResetComplete={clearPasswordRecovery}
         onBackToLanding={() => navigateWithLoading('landing')}
+        lang={lang}
+        setLang={handleSetLang}
       />
     ) : (
       <LandingPageView
         onGetStartedClick={openBetaApplication}
         onLoginClick={() => navigateWithLoading('login')}
+        lang={lang}
+        setLang={handleSetLang}
       />
     )
   ) : !isApproved ? (
@@ -608,6 +668,7 @@ function App() {
       profile={profile}
       userEmail={displayEmail}
       onLogout={handleLogout}
+      lang={lang}
     />
   ) : (
     <div className="h-screen w-screen overflow-hidden bg-slate-50">
@@ -618,6 +679,8 @@ function App() {
           onCreateOrderClick={handleCreateOrderClick}
           onLogoutClick={handleLogout}
           userName={displayName}
+          lang={lang}
+          onLangToggle={() => handleSetLang(lang === 'id' ? 'en' : 'id')}
         >
           {renderView()}
         </MobileAppShell>
@@ -630,6 +693,8 @@ function App() {
           onLogoutClick={handleLogout}
           userName={displayName}
           userEmail={displayEmail}
+          lang={lang}
+          setLang={handleSetLang}
         />
         <main className="flex-1 flex flex-col min-w-0 bg-slate-50/50">{renderView()}</main>
         </div>
@@ -638,7 +703,7 @@ function App() {
         <div className="fixed left-4 right-4 top-16 z-40 flex flex-col gap-2 lg:left-72 lg:right-6 lg:top-4">
           {isDataLoading && (
             <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs font-semibold text-slate-500 shadow-lg shadow-slate-900/5">
-              Loading workspace database...
+              {lang === 'id' ? 'Memuat database workspace...' : 'Loading workspace database...'}
             </div>
           )}
           {(dataError || authError) && (
@@ -649,15 +714,21 @@ function App() {
           {canImportLocalOrders && (
             <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 shadow-lg shadow-slate-900/5 flex items-center justify-between gap-3">
               <div>
-                <p className="text-xs font-bold text-emerald-900">Import local orders?</p>
-                <p className="text-[11px] text-emerald-700 mt-0.5">Kami menemukan data lama di browser ini. Pindahkan ke database Supabase akun ini.</p>
+                <p className="text-xs font-bold text-emerald-900">
+                  {lang === 'id' ? 'Impor order lokal?' : 'Import local orders?'}
+                </p>
+                <p className="text-[11px] text-emerald-700 mt-0.5">
+                  {lang === 'id' 
+                    ? 'Kami menemukan data lama di browser ini. Pindahkan ke database Supabase akun ini.' 
+                    : 'We found old data on this browser. Move it to this account\'s Supabase database.'}
+                </p>
               </div>
               <div className="flex items-center gap-2">
                 <button type="button" onClick={dismissLocalImport} className="px-3 py-1.5 rounded-lg bg-white text-[11px] font-bold text-emerald-700 cursor-pointer">
-                  Skip
+                  {lang === 'id' ? 'Lewati' : 'Skip'}
                 </button>
                 <button type="button" onClick={handleImportLocalOrders} className="px-3 py-1.5 rounded-lg bg-emerald-600 text-[11px] font-bold text-white cursor-pointer">
-                  Import
+                  {lang === 'id' ? 'Impor' : 'Import'}
                 </button>
               </div>
             </div>

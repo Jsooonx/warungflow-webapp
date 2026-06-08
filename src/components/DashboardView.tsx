@@ -28,6 +28,7 @@ interface DashboardViewProps {
   onEditOrder: (order: Order) => void;
   invoiceHandledOrderIds?: string[];
   lastChangedOrder?: { id: string; kind: 'create' | 'edit' | 'status' } | null;
+  lang: 'id' | 'en';
 }
 
 // 7-day sparkline baseline waves
@@ -119,10 +120,10 @@ const STATUS_ICONS: Record<OrderStatus, React.ComponentType<{ className?: string
 };
 
 // SVG Path Helpers
-const getDayLabel = (daysAgo: number) => {
+const getDayLabel = (daysAgo: number, lang?: 'id' | 'en') => {
   const date = new Date();
   date.setDate(date.getDate() - daysAgo);
-  return date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
+  return date.toLocaleDateString(lang === 'id' ? 'id-ID' : 'en-US', { day: '2-digit', month: 'short' });
 };
 
 const getSvgCoords = (points: number[], width = 120, height = 36) => {
@@ -201,12 +202,36 @@ const CountUpValue: React.FC<{ value: number }> = ({ value }) => {
   return <>{displayValue}</>;
 };
 
+const getStatusTheme = (status: OrderStatus, lang: 'id' | 'en') => {
+  const t = THEMES[status];
+  return {
+    ...t,
+    label: {
+      pending_payment: lang === 'id' ? 'Belum Bayar' : 'Unpaid',
+      paid: lang === 'id' ? 'Lunas' : 'Paid',
+      packing: lang === 'id' ? 'Dikemas' : 'Packing',
+      shipped: lang === 'id' ? 'Dikirim' : 'Shipped',
+      done: lang === 'id' ? 'Selesai' : 'Completed',
+      cancelled: lang === 'id' ? 'Dibatalkan' : 'Cancelled',
+    }[status],
+    desc: {
+      pending_payment: lang === 'id' ? 'Menunggu transfer bank' : 'Waiting for transfer',
+      paid: lang === 'id' ? 'Siap dikemas' : 'Ready to pack',
+      packing: lang === 'id' ? 'Dalam proses packing' : 'In production/wrap',
+      shipped: lang === 'id' ? 'Dikirim ke kurir' : 'Sent to couriers',
+      done: lang === 'id' ? 'Diterima oleh pelanggan' : 'Delivered to customers',
+      cancelled: lang === 'id' ? 'Order dibatalkan' : 'Voided order',
+    }[status],
+  };
+};
+
 export const DashboardView: React.FC<DashboardViewProps> = ({ 
   orders, 
   onNavigateToTab,
   onEditOrder,
   invoiceHandledOrderIds = [],
-  lastChangedOrder = null
+  lastChangedOrder = null,
+  lang
 }) => {
   // Modal tracking states
   const [activeChartModal, setActiveChartModal] = useState<OrderStatus | null>(null);
@@ -311,10 +336,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     ...missingTracking.map((order) => ({
       id: `missing-${order.id}`,
       order,
-      title: 'Missing tracking code',
+      title: lang === 'id' ? 'Kode resi pengiriman belum diisi' : 'Missing tracking code',
       meta: `${order.orderNumber} - ${order.customerName}`,
-      ageLabel: 'Missing resi',
-      actionLabel: 'Add Resi',
+      ageLabel: lang === 'id' ? 'Resi kosong' : 'Missing resi',
+      actionLabel: lang === 'id' ? 'Tambah Resi' : 'Add Resi',
       severity: 4,
       tone: 'indigo' as const,
       Icon: HelpCircle,
@@ -323,10 +348,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     ...packingStuck.map((order) => ({
       id: `packing-${order.id}`,
       order,
-      title: 'Packing is aging',
+      title: lang === 'id' ? 'Proses packing tertunda lama' : 'Packing is aging',
       meta: `${order.orderNumber} - ${order.productName}`,
-      ageLabel: `${formatAge(getAgeMs(order))} packing`,
-      actionLabel: 'Ship',
+      ageLabel: lang === 'id' ? `${formatAge(getAgeMs(order))} dikemas` : `${formatAge(getAgeMs(order))} packing`,
+      actionLabel: lang === 'id' ? 'Kirim' : 'Ship',
       severity: 3,
       tone: 'purple' as const,
       Icon: Package,
@@ -335,10 +360,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     ...unpaidStuck.map((order) => ({
       id: `unpaid-${order.id}`,
       order,
-      title: 'Payment follow-up due',
+      title: lang === 'id' ? 'Perlu follow-up pembayaran' : 'Payment follow-up due',
       meta: `${order.orderNumber} - Rp${order.totalPrice.toLocaleString('id-ID')}`,
-      ageLabel: `${formatAge(getAgeMs(order))} unpaid`,
-      actionLabel: 'Remind',
+      ageLabel: lang === 'id' ? `${formatAge(getAgeMs(order))} belum bayar` : `${formatAge(getAgeMs(order))} unpaid`,
+      actionLabel: lang === 'id' ? 'Ingatkan' : 'Remind',
       severity: 2,
       tone: 'amber' as const,
       Icon: Clock,
@@ -347,10 +372,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     ...paidInvoiceMissing.map((order) => ({
       id: `invoice-${order.id}`,
       order,
-      title: 'Invoice belum dikirim',
+      title: lang === 'id' ? 'Invoice belum dikirim' : 'Invoice not sent yet',
       meta: `${order.orderNumber} - ${order.productName}`,
-      ageLabel: `${formatAge(getAgeMs(order))} paid`,
-      actionLabel: 'Invoice',
+      ageLabel: lang === 'id' ? `${formatAge(getAgeMs(order))} lunas` : `${formatAge(getAgeMs(order))} paid`,
+      actionLabel: lang === 'id' ? 'Invoice' : 'Invoice',
       severity: 2,
       tone: 'blue' as const,
       Icon: FileText,
@@ -359,10 +384,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     ...paidReadyToPack.map((order) => ({
       id: `paid-${order.id}`,
       order,
-      title: 'Ready to pack',
+      title: lang === 'id' ? 'Siap dikemas' : 'Ready to pack',
       meta: `${order.orderNumber} - ${order.productName}`,
-      ageLabel: `${formatAge(getAgeMs(order))} paid`,
-      actionLabel: 'Pack',
+      ageLabel: lang === 'id' ? `${formatAge(getAgeMs(order))} lunas` : `${formatAge(getAgeMs(order))} paid`,
+      actionLabel: lang === 'id' ? 'Kemas' : 'Pack',
       severity: 1,
       tone: 'blue' as const,
       Icon: CheckCircle,
@@ -380,10 +405,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     ...unpaidStuck.map((order) => ({
       id: `follow-unpaid-${order.id}`,
       order,
-      title: 'Send payment reminder',
+      title: lang === 'id' ? 'Kirim pengingat pembayaran' : 'Send payment reminder',
       meta: `${order.customerName} - ${order.orderNumber}`,
-      ageLabel: `${formatAge(getAgeMs(order))} waiting`,
-      actionLabel: 'Remind',
+      ageLabel: lang === 'id' ? `${formatAge(getAgeMs(order))} menunggu` : `${formatAge(getAgeMs(order))} waiting`,
+      actionLabel: lang === 'id' ? 'Ingatkan' : 'Remind',
       severity: 3,
       tone: 'amber' as const,
       Icon: MessageSquare,
@@ -392,10 +417,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     ...paidReady.map((order) => ({
       id: `follow-paid-${order.id}`,
       order,
-      title: 'Send processing update',
+      title: lang === 'id' ? 'Kirim update proses pesanan' : 'Send processing update',
       meta: `${order.customerName} - ${order.orderNumber}`,
-      ageLabel: 'Ready update',
-      actionLabel: 'Process',
+      ageLabel: lang === 'id' ? 'Update siap' : 'Ready update',
+      actionLabel: lang === 'id' ? 'Proses' : 'Process',
       severity: 2,
       tone: 'blue' as const,
       Icon: MessageSquare,
@@ -404,10 +429,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     ...packingOrders.map((order) => ({
       id: `follow-packing-${order.id}`,
       order,
-      title: 'Send processing update',
+      title: lang === 'id' ? 'Kirim update proses pesanan' : 'Send processing update',
       meta: `${order.customerName} - ${order.orderNumber}`,
-      ageLabel: `${formatAge(getAgeMs(order))} packing`,
-      actionLabel: 'Update',
+      ageLabel: lang === 'id' ? `${formatAge(getAgeMs(order))} dikemas` : `${formatAge(getAgeMs(order))} packing`,
+      actionLabel: lang === 'id' ? 'Update' : 'Update',
       severity: 2,
       tone: 'purple' as const,
       Icon: MessageSquare,
@@ -416,10 +441,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     ...shippedWithTracking.map((order) => ({
       id: `follow-shipped-${order.id}`,
       order,
-      title: 'Send shipping alert',
+      title: lang === 'id' ? 'Kirim notifikasi pengiriman & resi' : 'Send shipping alert',
       meta: `${order.customerName} - ${order.trackingNumber}`,
-      ageLabel: 'Resi ready',
-      actionLabel: 'Alert',
+      ageLabel: lang === 'id' ? 'Resi siap' : 'Resi ready',
+      actionLabel: lang === 'id' ? 'Notif' : 'Alert',
       severity: 1,
       tone: 'emerald' as const,
       Icon: Truck,
@@ -438,16 +463,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
   // Status visual themes for the Feed List
   const statusStyles: Record<OrderStatus, { bg: string, text: string, label: string }> = {
-    pending_payment: { bg: 'bg-amber-50 border-amber-200', text: 'text-amber-800', label: 'Unpaid' },
-    paid: { bg: 'bg-blue-50 border-blue-200', text: 'text-blue-800', label: 'Paid' },
-    packing: { bg: 'bg-purple-50 border-purple-200', text: 'text-purple-800', label: 'Packing' },
-    shipped: { bg: 'bg-indigo-50 border-indigo-200', text: 'text-indigo-800', label: 'Shipped' },
-    done: { bg: 'bg-emerald-50 border-emerald-200', text: 'text-emerald-800', label: 'Done' },
-    cancelled: { bg: 'bg-rose-50 border-rose-200', text: 'text-rose-800', label: 'Cancelled' },
+    pending_payment: { bg: 'bg-amber-50 border-amber-200', text: 'text-amber-800', label: lang === 'id' ? 'Belum Bayar' : 'Unpaid' },
+    paid: { bg: 'bg-blue-50 border-blue-200', text: 'text-blue-800', label: lang === 'id' ? 'Lunas' : 'Paid' },
+    packing: { bg: 'bg-purple-50 border-purple-200', text: 'text-purple-800', label: lang === 'id' ? 'Dikemas' : 'Packing' },
+    shipped: { bg: 'bg-indigo-50 border-indigo-200', text: 'text-indigo-800', label: lang === 'id' ? 'Dikirim' : 'Shipped' },
+    done: { bg: 'bg-emerald-50 border-emerald-200', text: 'text-emerald-800', label: lang === 'id' ? 'Selesai' : 'Done' },
+    cancelled: { bg: 'bg-rose-50 border-rose-200', text: 'text-rose-800', label: lang === 'id' ? 'Dibatalkan' : 'Cancelled' },
   };
 
   const formatCreatedAt = (dateString: string) => {
-    return new Intl.DateTimeFormat('id-ID', {
+    return new Intl.DateTimeFormat(lang === 'id' ? 'id-ID' : 'en-US', {
       weekday: 'long',
       day: '2-digit',
       month: 'long',
@@ -458,7 +483,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   };
 
   // Pre-calculate large chart items if modal active
-  const largeTheme = activeChartModal ? THEMES[activeChartModal] : null;
+  const largeTheme = activeChartModal ? getStatusTheme(activeChartModal, lang) : null;
   const largeIcon = activeChartModal ? STATUS_ICONS[activeChartModal] : null;
   const largePoints = activeChartModal ? getStatusDataPoints(activeChartModal) : [];
   
@@ -490,8 +515,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     <div className="flex-1 p-4 sm:p-8 overflow-y-auto space-y-6 select-none page-transition-enter">
       {/* Title Header */}
       <div>
-        <h2 className="text-xl font-bold text-slate-900 tracking-tight">Overview Dashboard</h2>
-        <p className="text-xs text-slate-400 mt-1">Real-time operational tracking and task queues.</p>
+        <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+          {lang === 'id' ? 'Ringkasan Dasbor' : 'Overview Dashboard'}
+        </h2>
+        <p className="text-xs text-slate-400 mt-1">
+          {lang === 'id' ? 'Pelacakan operasional dan antrean tugas real-time.' : 'Real-time operational tracking and task queues.'}
+        </p>
       </div>
 
       {hasNoOrders && (
@@ -501,30 +530,46 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 mb-4">
                 <ShoppingCart className="h-4 w-4" />
               </div>
-              <h3 className="text-lg font-extrabold text-slate-900 tracking-tight">Start your first order flow</h3>
+              <h3 className="text-lg font-extrabold text-slate-900 tracking-tight">
+                {lang === 'id' ? 'Mulai alur order pertama Anda' : 'Start your first order flow'}
+              </h3>
               <p className="mt-2 max-w-lg text-xs leading-relaxed text-slate-500">
-                Dashboard akan hidup setelah ada order pertama. Mulai dari input manual atau paste chat pembeli ke Magic Paste.
+                {lang === 'id' 
+                  ? 'Dasbor akan aktif setelah ada order pertama. Mulai dari input manual atau paste chat pembeli ke Magic Paste.' 
+                  : 'Dashboard will come alive after the first order. Start with manual input or paste buyer chat into Magic Paste.'}
               </p>
               <div className="mt-5 flex flex-wrap gap-2">
                 <button
                   onClick={() => onNavigateToTab('orders/new')}
                   className="group h-9 px-4 rounded-lg bg-slate-950 hover:bg-white text-white hover:text-slate-950 text-xs font-bold transition-all duration-500 shadow-xs cursor-pointer"
                 >
-                  <RollingText compact>Create first order</RollingText>
+                  <RollingText compact>{lang === 'id' ? 'Buat order pertama' : 'Create first order'}</RollingText>
                 </button>
                 <button
                   onClick={() => onNavigateToTab('orders/new')}
                   className="group h-9 px-4 rounded-lg bg-white hover:bg-slate-950 text-slate-700 hover:text-white text-xs font-bold transition-all duration-500 shadow-xs cursor-pointer"
                 >
-                  <RollingText compact>Try Magic Paste</RollingText>
+                  <RollingText compact>{lang === 'id' ? 'Coba Tempel Ajaib' : 'Try Magic Paste'}</RollingText>
                 </button>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-3 p-5 sm:p-6 bg-slate-50/50">
               {[
-                { icon: ClipboardPaste, title: 'Paste chat', desc: 'Salin format order dari WhatsApp buyer.' },
-                { icon: MessageSquare, title: 'Send updates', desc: 'Kirim reminder, invoice, atau resi via WA.' },
-                { icon: Database, title: 'Track customers', desc: 'Customer list otomatis dari order tersimpan.' },
+                { 
+                  icon: ClipboardPaste, 
+                  title: lang === 'id' ? 'Tempel chat' : 'Paste chat', 
+                  desc: lang === 'id' ? 'Salin format order dari WhatsApp buyer.' : 'Copy order format from buyer WhatsApp.' 
+                },
+                { 
+                  icon: MessageSquare, 
+                  title: lang === 'id' ? 'Kirim notifikasi' : 'Send updates', 
+                  desc: lang === 'id' ? 'Kirim reminder, invoice, atau resi via WA.' : 'Send reminder, invoice, or receipt via WA.' 
+                },
+                { 
+                  icon: Database, 
+                  title: lang === 'id' ? 'Lacak pelanggan' : 'Track customers', 
+                  desc: lang === 'id' ? 'Customer list otomatis dari order tersimpan.' : 'Automatic customer database from saved orders.' 
+                },
               ].map((item) => {
                 const Icon = item.icon;
                 return (
@@ -543,7 +588,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       {/* KPI Cards Row */}
       <div className="grid grid-cols-2 xl:grid-cols-5 gap-3">
         {cardStatuses.map((status) => {
-          const theme = THEMES[status];
+          const theme = getStatusTheme(status, lang);
           const Icon = STATUS_ICONS[status];
           const count = getCount(status);
           const points = getStatusDataPoints(status);
@@ -602,11 +647,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div className="h-14 px-6 border-b border-slate-100 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <AlertTriangle className={`w-4 h-4 ${attentionCount > 0 ? 'text-amber-500 animate-pulse' : 'text-slate-400'}`} />
-              <h3 className="text-xs font-semibold text-slate-800 uppercase tracking-wider">Today's Work Queue</h3>
+              <h3 className="text-xs font-semibold text-slate-800 uppercase tracking-wider">
+                {lang === 'id' ? 'Antrean Kerja Hari Ini' : "Today's Work Queue"}
+              </h3>
             </div>
             {attentionCount > 0 && (
               <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">
-                {attentionCount} Tasks
+                {attentionCount} {lang === 'id' ? 'Tugas' : 'Tasks'}
               </span>
             )}
           </div>
@@ -615,8 +662,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             {attentionCount === 0 ? (
               <div className="p-12 text-center">
                 <CheckCircle className="w-8 h-8 text-emerald-500 mx-auto mb-3" />
-                <p className="text-xs font-semibold text-slate-800">All caught up!</p>
-                <p className="text-[11px] text-slate-400 mt-1">No urgent payment, packing, or shipping tasks right now.</p>
+                <p className="text-xs font-semibold text-slate-800">
+                  {lang === 'id' ? 'Semua beres!' : 'All caught up!'}
+                </p>
+                <p className="text-[11px] text-slate-400 mt-1">
+                  {lang === 'id' 
+                    ? 'Tidak ada tugas pembayaran, packing, atau pengiriman yang mendesak saat ini.' 
+                    : 'No urgent payment, packing, or shipping tasks right now.'}
+                </p>
               </div>
             ) : (
               workQueueItems.map((item) => {
@@ -658,13 +711,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div className="h-14 px-6 border-b border-slate-100 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-slate-400" />
-              <h3 className="text-xs font-semibold text-slate-800 uppercase tracking-wider">Bottleneck Aging</h3>
+              <h3 className="text-xs font-semibold text-slate-800 uppercase tracking-wider">
+                {lang === 'id' ? 'Hambatan Operasional' : 'Bottleneck Aging'}
+              </h3>
             </div>
             <button
               onClick={() => onNavigateToTab('orders')}
               className="group text-[11px] font-semibold text-emerald-600 hover:text-emerald-700 cursor-pointer"
             >
-              <RollingText compact>Audit All</RollingText>
+              <RollingText compact>{lang === 'id' ? 'Audit Semua' : 'Audit All'}</RollingText>
             </button>
           </div>
 
@@ -672,8 +727,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             {agingItems.length === 0 ? (
               <div className="h-full min-h-48 flex flex-col items-center justify-center text-center">
                 <CheckCircle className="w-8 h-8 text-emerald-500 mb-3" />
-                <p className="text-xs font-semibold text-slate-800">No aging bottlenecks</p>
-                <p className="text-[11px] text-slate-400 mt-1">No late unpaid, packing, or missing resi items.</p>
+                <p className="text-xs font-semibold text-slate-800">
+                  {lang === 'id' ? 'Tidak ada hambatan menumpuk' : 'No aging bottlenecks'}
+                </p>
+                <p className="text-[11px] text-slate-400 mt-1">
+                  {lang === 'id' 
+                    ? 'Tidak ada pesanan belum bayar, packing, atau resi kosong yang telat.' 
+                    : 'No late unpaid, packing, or missing resi items.'}
+                </p>
               </div>
             ) : (
               agingItems.map((item) => {
@@ -705,11 +766,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div className="h-14 px-6 border-b border-slate-100 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <MessageSquare className="w-4 h-4 text-slate-400" />
-              <h3 className="text-xs font-semibold text-slate-800 uppercase tracking-wider">WhatsApp Follow-up Queue</h3>
+              <h3 className="text-xs font-semibold text-slate-800 uppercase tracking-wider">
+                {lang === 'id' ? 'Antrean Follow-up WhatsApp' : 'WhatsApp Follow-up Queue'}
+              </h3>
             </div>
             {followUpItems.length > 0 && (
               <span className="text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full">
-                {followUpItems.length} Ready
+                {followUpItems.length} {lang === 'id' ? 'Siap' : 'Ready'}
               </span>
             )}
           </div>
@@ -718,8 +781,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             {followUpItems.length === 0 ? (
               <div className="p-12 text-center">
                 <CheckCircle className="w-8 h-8 text-emerald-500 mx-auto mb-3" />
-                <p className="text-xs font-semibold text-slate-800">No follow-ups queued</p>
-                <p className="text-[11px] text-slate-400 mt-1">No reminder, processing, or shipping alert is waiting.</p>
+                <p className="text-xs font-semibold text-slate-800">
+                  {lang === 'id' ? 'Tidak ada antrean follow-up' : 'No follow-ups queued'}
+                </p>
+                <p className="text-[11px] text-slate-400 mt-1">
+                  {lang === 'id' 
+                    ? 'Tidak ada pengingat pembayaran, proses, atau notifikasi pengiriman yang menunggu.' 
+                    : 'No reminder, processing, or shipping alert is waiting.'}
+                </p>
               </div>
             ) : (
               followUpItems.map((item) => {
@@ -754,20 +823,22 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div className="h-14 px-6 border-b border-slate-100 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <ShoppingCart className="w-4 h-4 text-slate-400" />
-              <h3 className="text-xs font-semibold text-slate-800 uppercase tracking-wider">Recent Orders Feed</h3>
+              <h3 className="text-xs font-semibold text-slate-800 uppercase tracking-wider">
+                {lang === 'id' ? 'Aktivitas Order Terbaru' : 'Recent Orders Feed'}
+              </h3>
             </div>
             <button 
               onClick={() => onNavigateToTab('orders')}
               className="group text-[11px] font-semibold text-emerald-600 hover:text-emerald-700 cursor-pointer"
             >
-              <RollingText compact>View All</RollingText>
+              <RollingText compact>{lang === 'id' ? 'Lihat Semua' : 'View All'}</RollingText>
             </button>
           </div>
           
           <div className="flex-1 divide-y divide-slate-100 overflow-y-auto max-h-96">
             {recentOrders.length === 0 ? (
               <div className="p-12 text-center text-slate-400 text-xs">
-                No orders registered yet.
+                {lang === 'id' ? 'Belum ada order terdaftar.' : 'No orders registered yet.'}
               </div>
             ) : (
               recentOrders.map((order) => {
@@ -796,7 +867,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                       </span>
                       <span className="text-[10px] text-slate-400 text-right leading-snug flex items-start gap-1">
                         <CalendarClock className="w-3 h-3 mt-0.5 shrink-0 text-slate-300" />
-                        Added {formatCreatedAt(order.createdAt)}
+                        {lang === 'id' ? 'Dibuat' : 'Added'} {formatCreatedAt(order.createdAt)}
                       </span>
                     </div>
                   </div>
@@ -833,12 +904,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 })}
               </div>
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Trend Analysis</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  {lang === 'id' ? 'Analisis Tren' : 'Trend Analysis'}
+                </span>
                 <h3 className="text-base font-bold text-slate-900 leading-snug">
-                  {largeTheme.label} Orders History
+                  {lang === 'id' ? `Riwayat Order ${largeTheme.label}` : `${largeTheme.label} Orders History`}
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Showing transaction volume and trends for the last 7 days.
+                  {lang === 'id' ? 'Menampilkan volume transaksi dan tren selama 7 hari terakhir.' : 'Showing transaction volume and trends for the last 7 days.'}
                 </p>
               </div>
             </div>
@@ -953,7 +1026,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 {/* Dates under points */}
                 {largeCoords.map((pt, idx) => {
                   const daysAgo = 6 - idx;
-                  const dateLabel = getDayLabel(daysAgo);
+                  const dateLabel = getDayLabel(daysAgo, lang);
                   return (
                     <text 
                       key={idx} 
@@ -1005,7 +1078,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                       fontWeight="500"
                       className="font-sans"
                     >
-                      {getDayLabel(6 - hoveredPointIndex)}
+                      {getDayLabel(6 - hoveredPointIndex, lang)}
                     </text>
                     <text
                       x="0"
@@ -1025,9 +1098,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
             {/* Quick overview metric */}
             <div className="mt-4 flex items-center justify-between text-xs border border-slate-100 bg-slate-50/20 p-3 rounded-xl font-medium">
-              <span className="text-slate-400">Total in Status Currently</span>
+              <span className="text-slate-400">{lang === 'id' ? 'Total Status Saat Ini' : 'Total in Status Currently'}</span>
               <span className="text-slate-800 font-bold font-mono">
-                {getCount(activeChartModal)} Orders
+                {getCount(activeChartModal)} {lang === 'id' ? 'Order' : 'Orders'}
               </span>
             </div>
 
@@ -1040,7 +1113,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 }}
                 className="group flex-1 py-2.5 border border-transparent bg-white hover:bg-slate-950 text-slate-600 hover:text-white rounded-xl font-semibold text-xs transition-all duration-500 cursor-pointer text-center shadow-xs"
               >
-                <RollingText compact>Close</RollingText>
+                <RollingText compact>{lang === 'id' ? 'Tutup' : 'Close'}</RollingText>
               </button>
               <button
                 onClick={() => {
@@ -1050,7 +1123,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 }}
                 className="group flex-[2] py-2.5 border border-transparent text-white hover:text-emerald-700 bg-emerald-600 hover:bg-white rounded-xl font-semibold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all duration-500 shadow-sm shadow-emerald-600/10"
               >
-                <RollingText compact>View Detailed Logs</RollingText> <ArrowRight className="w-3.5 h-3.5 transition-transform duration-500 group-hover:translate-x-0.5" />
+                <RollingText compact>{lang === 'id' ? 'Lihat Log Detail' : 'View Detailed Logs'}</RollingText> <ArrowRight className="w-3.5 h-3.5 transition-transform duration-500 group-hover:translate-x-0.5" />
               </button>
             </div>
 

@@ -28,6 +28,7 @@ interface OrdersViewProps {
   onFilterStatusChange?: (status: string) => void;
   lastChangedOrder?: { id: string; kind: 'create' | 'edit' | 'status' } | null;
   savedStatusOrderId?: string | null;
+  lang?: 'id' | 'en';
 }
 
 export const OrdersView: React.FC<OrdersViewProps> = ({
@@ -42,7 +43,8 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
   initialFilterStatus = 'all',
   onFilterStatusChange,
   lastChangedOrder = null,
-  savedStatusOrderId = null
+  savedStatusOrderId = null,
+  lang = 'id'
 }) => {
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>(initialFilterStatus);
@@ -114,10 +116,10 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
     return (
       <>
         <p className="text-[9px] font-bold text-slate-400 px-2 py-0.5 uppercase tracking-wider">
-          Send WA Alert
+          {lang === 'id' ? 'Kirim Notifikasi WA' : 'Send WA Alert'}
         </p>
         <p className="px-2 pb-1 text-[10px] text-slate-400 leading-normal">
-          Message text will be copied first. Paste it in the WhatsApp chat that opens.
+          {lang === 'id' ? 'Teks pesan akan disalin terlebih dahulu. Tempel di chat WhatsApp yang terbuka.' : 'Message text will be copied first. Paste it in the WhatsApp chat that opens.'}
         </p>
         <div className="space-y-0.5 mt-1">
           {order.status === 'paid' && (
@@ -132,7 +134,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
               >
                 <span className="text-blue-700 group-hover:text-blue-800 flex items-center gap-1.5">
                   <MessageSquare className="w-3 h-3" />
-                  <RollingText compact>Send invoice WA</RollingText>
+                  <RollingText compact>{lang === 'id' ? 'Kirim invoice WA' : 'Send invoice WA'}</RollingText>
                 </span>
                 {copiedId === `${order.id}-invoice-send` ? (
                   <Check className="w-3 h-3 text-emerald-600 shrink-0" />
@@ -150,7 +152,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
               >
                 <span className="text-slate-700 group-hover:text-blue-700 flex items-center gap-1.5">
                   <FileText className="w-3 h-3" />
-                  <RollingText compact>Copy invoice text</RollingText>
+                  <RollingText compact>{lang === 'id' ? 'Salin teks invoice' : 'Copy invoice text'}</RollingText>
                 </span>
                 {copiedId === `${order.id}-invoice-copy` ? (
                   <Check className="w-3 h-3 text-emerald-600 shrink-0" />
@@ -162,6 +164,12 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
           )}
           {templates.map((tpl) => {
             const isCopied = copiedId === `${order.id}-${tpl.id}`;
+            let translatedName = tpl.name;
+            if (tpl.type === 'payment_confirmation') translatedName = lang === 'id' ? 'Tagihan Pembayaran' : 'Payment Bill';
+            if (tpl.type === 'processing') translatedName = lang === 'id' ? 'Konfirmasi Lunas' : 'Payment Confirmation';
+            if (tpl.type === 'shipping') translatedName = lang === 'id' ? 'Notifikasi Resi' : 'Shipping Receipt';
+            if (tpl.type === 'order_format') translatedName = lang === 'id' ? 'Format Order WhatsApp' : 'WhatsApp Order Format';
+
             return (
               <button
                 key={tpl.id}
@@ -172,7 +180,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
                 className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-slate-50 text-[11px] font-semibold flex items-center justify-between group transition-colors cursor-pointer"
               >
                 <span className="text-slate-700 group-hover:text-emerald-700">
-                  <RollingText compact>{tpl.name}</RollingText>
+                  <RollingText compact>{translatedName}</RollingText>
                 </span>
                 {isCopied ? (
                   <Check className="w-3 h-3 text-emerald-600 shrink-0" />
@@ -188,16 +196,16 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
   };
 
   const statusStyles: Record<OrderStatus, { bg: string, text: string, label: string }> = {
-    pending_payment: { bg: 'bg-amber-50 border-amber-200 text-amber-800', text: 'text-amber-800', label: 'Unpaid' },
-    paid: { bg: 'bg-blue-50 border-blue-200 text-blue-800', text: 'text-blue-800', label: 'Paid' },
-    packing: { bg: 'bg-purple-50 border-purple-200 text-purple-800', text: 'text-purple-800', label: 'Packing' },
-    shipped: { bg: 'bg-indigo-50 border-indigo-200 text-indigo-800', text: 'text-indigo-800', label: 'Shipped' },
-    done: { bg: 'bg-emerald-50 border-emerald-200 text-emerald-800', text: 'text-emerald-800', label: 'Done' },
-    cancelled: { bg: 'bg-rose-50 border-rose-200 text-rose-800', text: 'text-rose-800', label: 'Cancelled' },
+    pending_payment: { bg: 'bg-amber-50 border-amber-200 text-amber-800', text: 'text-amber-800', label: lang === 'id' ? 'Belum Bayar' : 'Unpaid' },
+    paid: { bg: 'bg-blue-50 border-blue-200 text-blue-800', text: 'text-blue-800', label: lang === 'id' ? 'Lunas' : 'Paid' },
+    packing: { bg: 'bg-purple-50 border-purple-200 text-purple-800', text: 'text-purple-800', label: lang === 'id' ? 'Dikemas' : 'Packing' },
+    shipped: { bg: 'bg-indigo-50 border-indigo-200 text-indigo-800', text: 'text-indigo-800', label: lang === 'id' ? 'Dikirim' : 'Shipped' },
+    done: { bg: 'bg-emerald-50 border-emerald-200 text-emerald-800', text: 'text-emerald-800', label: lang === 'id' ? 'Selesai' : 'Done' },
+    cancelled: { bg: 'bg-rose-50 border-rose-200 text-rose-800', text: 'text-rose-800', label: lang === 'id' ? 'Batal' : 'Cancelled' },
   };
 
   const formatCreatedAt = (dateString: string) => {
-    return new Intl.DateTimeFormat('id-ID', {
+    return new Intl.DateTimeFormat(lang === 'id' ? 'id-ID' : 'en-US', {
       weekday: 'long',
       day: '2-digit',
       month: 'long',
@@ -212,15 +220,15 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
       {/* Header and Add Action */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Order Logs</h2>
-          <p className="text-xs text-slate-400 mt-1">High-density spreadsheet-like order workspace.</p>
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">{lang === 'id' ? 'Log Order' : 'Order Logs'}</h2>
+          <p className="text-xs text-slate-400 mt-1">{lang === 'id' ? 'Ruang kerja order padat seperti spreadsheet.' : 'High-density spreadsheet-like order workspace.'}</p>
         </div>
         <button
           onClick={onAddOrderClick}
           className="group h-9 px-4 rounded-lg border border-transparent bg-emerald-600 hover:bg-white active:bg-emerald-50 text-white hover:text-emerald-700 text-xs font-semibold flex items-center gap-2 shadow-xs cursor-pointer transition-all duration-500"
         >
           <Plus className="w-4 h-4 transition-transform duration-500 group-hover:rotate-90" />
-          <RollingText compact>Create Order</RollingText>
+          <RollingText compact>{lang === 'id' ? 'Buat Order' : 'Create Order'}</RollingText>
         </button>
       </div>
 
@@ -230,7 +238,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
           <input
             type="text"
-            placeholder="Search order ID, customer name, product, phone..."
+            placeholder={lang === 'id' ? 'Cari ID order, nama pelanggan, produk, telepon...' : 'Search order ID, customer name, product, phone...'}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full h-9 pl-9 pr-4 bg-slate-50 border border-slate-200/80 rounded-lg text-xs focus:bg-white focus:border-emerald-500 focus:outline-hidden transition-all"
@@ -239,10 +247,10 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
 
         <div className="flex w-full lg:w-auto items-center gap-1.5 lg:ml-auto overflow-x-auto pb-1 lg:pb-0">
           <Filter className="w-3.5 h-3.5 text-slate-400" />
-          <span className="text-xs font-medium text-slate-500 mr-1.5">Status:</span>
+          <span className="text-xs font-medium text-slate-500 mr-1.5">{lang === 'id' ? 'Status:' : 'Status:'}</span>
           {(['all', 'pending_payment', 'paid', 'packing', 'shipped', 'done', 'cancelled'] as const).map((status) => {
             const isActive = filterStatus === status;
-            const label = status === 'all' ? 'All Orders' : statusStyles[status]?.label;
+            const label = status === 'all' ? (lang === 'id' ? 'Semua Order' : 'All Orders') : statusStyles[status]?.label;
             return (
               <button
                 key={status}
@@ -267,7 +275,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
       <div className="space-y-3 lg:hidden">
         {filteredOrders.length === 0 ? (
           <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-xs text-slate-400 shadow-xs">
-            No orders matching search criteria.
+            {lang === 'id' ? 'Tidak ada order yang cocok dengan kriteria pencarian.' : 'No orders matching search criteria.'}
           </div>
         ) : (
           filteredOrders.map((order) => {
@@ -314,15 +322,15 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
                     onChange={(e) => onUpdateStatus(order.id, e.target.value as OrderStatus)}
                     className={`h-8 min-w-0 flex-1 rounded-lg border px-2 text-[10px] font-bold outline-hidden cursor-pointer ${style.bg} ${isStatusSaved ? 'status-pipeline-sweep' : ''}`}
                   >
-                    <option value="pending_payment">Unpaid</option>
-                    <option value="paid">Paid</option>
-                    <option value="packing">Packing</option>
-                    <option value="shipped">Shipped</option>
-                    <option value="done">Done</option>
-                    <option value="cancelled">Cancelled</option>
+                    <option value="pending_payment">{lang === 'id' ? 'Belum Bayar' : 'Unpaid'}</option>
+                    <option value="paid">{lang === 'id' ? 'Lunas' : 'Paid'}</option>
+                    <option value="packing">{lang === 'id' ? 'Dikemas' : 'Packing'}</option>
+                    <option value="shipped">{lang === 'id' ? 'Dikirim' : 'Shipped'}</option>
+                    <option value="done">{lang === 'id' ? 'Selesai' : 'Done'}</option>
+                    <option value="cancelled">{lang === 'id' ? 'Dibatalkan' : 'Cancelled'}</option>
                   </select>
                   {isStatusSaved && (
-                    <span className="saved-pill text-[10px] font-bold text-emerald-700">Saved</span>
+                    <span className="saved-pill text-[10px] font-bold text-emerald-700">{lang === 'id' ? 'Disimpan' : 'Saved'}</span>
                   )}
                 </div>
 
@@ -330,7 +338,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
                   <div className="relative">
                     <button
                       onClick={() => setActiveWhatsAppPopover(isWAOpen ? null : order.id)}
-                      title="Send WhatsApp alert"
+                      title={lang === 'id' ? 'Kirim notifikasi WhatsApp' : 'Send WhatsApp alert'}
                       className={`h-8 px-3 rounded-lg border text-[11px] font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
                         isWAOpen ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-white border-slate-200 text-slate-500'
                       }`}
@@ -349,17 +357,17 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
                   </div>
                   <button
                     onClick={() => onEditOrderClick(order)}
-                    title="Edit order details"
+                    title={lang === 'id' ? 'Edit detail order' : 'Edit order details'}
                     className="h-8 px-3 rounded-lg border border-slate-200 bg-white text-[11px] font-bold text-slate-500 cursor-pointer"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => onDeleteOrder(order.id)}
-                    title="Delete order"
+                    title={lang === 'id' ? 'Hapus order' : 'Delete order'}
                     className="h-8 px-3 rounded-lg border border-rose-100 bg-rose-50 text-[11px] font-bold text-rose-600 cursor-pointer"
                   >
-                    Delete
+                    {lang === 'id' ? 'Hapus' : 'Delete'}
                   </button>
                 </div>
               </div>
@@ -374,21 +382,21 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50/70 border-b border-slate-200 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                <th className="py-3 px-4 w-24">Order ID</th>
-                <th className="py-3 px-4 w-52">Added Date & Time</th>
-                <th className="py-3 px-4">Customer Name</th>
-                <th className="py-3 px-4 w-40">WhatsApp Number</th>
-                <th className="py-3 px-4">Product Name (Qty)</th>
-                <th className="py-3 px-4 w-32">Total Price</th>
+                <th className="py-3 px-4 w-24">{lang === 'id' ? 'ID Order' : 'Order ID'}</th>
+                <th className="py-3 px-4 w-52">{lang === 'id' ? 'Waktu Ditambahkan' : 'Added Date & Time'}</th>
+                <th className="py-3 px-4">{lang === 'id' ? 'Nama Pelanggan' : 'Customer Name'}</th>
+                <th className="py-3 px-4 w-40">{lang === 'id' ? 'Nomor WhatsApp' : 'WhatsApp Number'}</th>
+                <th className="py-3 px-4">{lang === 'id' ? 'Nama Produk (Qty)' : 'Product Name (Qty)'}</th>
+                <th className="py-3 px-4 w-32">{lang === 'id' ? 'Total Harga' : 'Total Price'}</th>
                 <th className="py-3 px-4 w-36">Status</th>
-                <th className="py-3 px-4 w-36 text-right">Actions</th>
+                <th className="py-3 px-4 w-36 text-right">{lang === 'id' ? 'Aksi' : 'Actions'}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-xs font-medium text-slate-700">
               {filteredOrders.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="py-12 text-center text-slate-400 text-xs">
-                    No orders matching search criteria.
+                    {lang === 'id' ? 'Tidak ada order yang cocok dengan kriteria pencarian.' : 'No orders matching search criteria.'}
                   </td>
                 </tr>
               ) : (
@@ -447,16 +455,16 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
                           onChange={(e) => onUpdateStatus(order.id, e.target.value as OrderStatus)}
                           className={`px-2 py-1 rounded-md text-[10px] font-bold border outline-hidden cursor-pointer ${style.bg} ${isStatusSaved ? 'status-pipeline-sweep' : ''}`}
                         >
-                          <option value="pending_payment">Unpaid</option>
-                          <option value="paid">Paid</option>
-                          <option value="packing">Packing</option>
-                          <option value="shipped">Shipped</option>
-                          <option value="done">Done</option>
-                          <option value="cancelled">Cancelled</option>
+                          <option value="pending_payment">{lang === 'id' ? 'Belum Bayar' : 'Unpaid'}</option>
+                          <option value="paid">{lang === 'id' ? 'Lunas' : 'Paid'}</option>
+                          <option value="packing">{lang === 'id' ? 'Dikemas' : 'Packing'}</option>
+                          <option value="shipped">{lang === 'id' ? 'Dikirim' : 'Shipped'}</option>
+                          <option value="done">{lang === 'id' ? 'Selesai' : 'Done'}</option>
+                          <option value="cancelled">{lang === 'id' ? 'Dibatalkan' : 'Cancelled'}</option>
                         </select>
                         {isStatusSaved && (
                           <span className="saved-pill ml-2 text-[10px] font-bold text-emerald-700">
-                            Saved
+                            {lang === 'id' ? 'Disimpan' : 'Saved'}
                           </span>
                         )}
                       </td>
@@ -468,7 +476,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
                           <div className="relative">
                             <button
                               onClick={() => setActiveWhatsAppPopover(isWAOpen ? null : order.id)}
-                              title="Send WhatsApp alert"
+                              title={lang === 'id' ? 'Kirim notifikasi WhatsApp' : 'Send WhatsApp alert'}
                               className={`p-1.5 rounded-lg border hover:bg-emerald-50 hover:text-emerald-700 hover:scale-105 active:scale-95 transition-all duration-150 group cursor-pointer ${
                                 isWAOpen ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-white border-slate-200 text-slate-400'
                               }`}
@@ -493,7 +501,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
                           {/* Edit Action */}
                           <button
                             onClick={() => onEditOrderClick(order)}
-                            title="Edit order details"
+                            title={lang === 'id' ? 'Edit detail order' : 'Edit order details'}
                             className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 hover:text-slate-800 text-slate-400 hover:scale-105 active:scale-95 transition-all duration-150 group cursor-pointer"
                           >
                             <Edit3 className="w-3.5 h-3.5 group-hover:rotate-12 transition-transform duration-200" />
@@ -502,7 +510,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
                           {/* Delete Action */}
                           <button
                             onClick={() => onDeleteOrder(order.id)}
-                            title="Delete order"
+                            title={lang === 'id' ? 'Hapus order' : 'Delete order'}
                             className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-rose-50 hover:text-rose-600 text-slate-400 hover:scale-105 active:scale-95 transition-all duration-150 group cursor-pointer"
                           >
                             <Trash2 className="w-3.5 h-3.5 animate-trash-shake" />
@@ -520,3 +528,4 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
     </div>
   );
 };
+

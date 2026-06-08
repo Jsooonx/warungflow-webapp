@@ -6,12 +6,14 @@ interface CustomerDrawerProps {
   customer: Customer | null;
   orders: Order[];
   onClose: () => void;
+  lang?: 'id' | 'en';
 }
 
 export const CustomerDrawer: React.FC<CustomerDrawerProps> = ({
   customer,
   orders,
-  onClose
+  onClose,
+  lang = 'id'
 }) => {
   const drawerRef = useRef<HTMLDivElement>(null);
 
@@ -54,16 +56,16 @@ export const CustomerDrawer: React.FC<CustomerDrawerProps> = ({
   };
 
   const statusStyles: Record<OrderStatus, { bg: string, text: string, label: string }> = {
-    pending_payment: { bg: 'bg-amber-50 border-amber-200 text-amber-800', text: 'text-amber-800', label: 'Unpaid' },
-    paid: { bg: 'bg-blue-50 border-blue-200 text-blue-800', text: 'text-blue-800', label: 'Paid' },
-    packing: { bg: 'bg-purple-50 border-purple-200 text-purple-800', text: 'text-purple-800', label: 'Packing' },
-    shipped: { bg: 'bg-indigo-50 border-indigo-200 text-indigo-800', text: 'text-indigo-800', label: 'Shipped' },
-    done: { bg: 'bg-emerald-50 border-emerald-200 text-emerald-800', text: 'text-emerald-800', label: 'Done' },
-    cancelled: { bg: 'bg-rose-50 border-rose-200 text-rose-800', text: 'text-rose-800', label: 'Cancelled' },
+    pending_payment: { bg: 'bg-amber-50 border-amber-200 text-amber-800', text: 'text-amber-800', label: lang === 'id' ? 'Belum Bayar' : 'Unpaid' },
+    paid: { bg: 'bg-blue-50 border-blue-200 text-blue-800', text: 'text-blue-800', label: lang === 'id' ? 'Lunas' : 'Paid' },
+    packing: { bg: 'bg-purple-50 border-purple-200 text-purple-800', text: 'text-purple-800', label: lang === 'id' ? 'Dikemas' : 'Packing' },
+    shipped: { bg: 'bg-indigo-50 border-indigo-200 text-indigo-800', text: 'text-indigo-800', label: lang === 'id' ? 'Dikirim' : 'Shipped' },
+    done: { bg: 'bg-emerald-50 border-emerald-200 text-emerald-800', text: 'text-emerald-800', label: lang === 'id' ? 'Selesai' : 'Done' },
+    cancelled: { bg: 'bg-rose-50 border-rose-200 text-rose-800', text: 'text-rose-800', label: lang === 'id' ? 'Dibatalkan' : 'Cancelled' },
   };
 
   const formatOrderDate = (dateString: string) => {
-    return new Intl.DateTimeFormat('id-ID', {
+    return new Intl.DateTimeFormat(lang === 'id' ? 'id-ID' : 'en-US', {
       weekday: 'long',
       day: '2-digit',
       month: 'long',
@@ -89,7 +91,9 @@ export const CustomerDrawer: React.FC<CustomerDrawerProps> = ({
       >
         {/* Drawer Header */}
         <div className="h-16 px-6 border-b border-slate-100 flex items-center justify-between shrink-0">
-          <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Customer Details</h3>
+          <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">
+            {lang === 'id' ? 'Detail Pelanggan' : 'Customer Details'}
+          </h3>
           <button 
             onClick={onClose}
             className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
@@ -121,14 +125,14 @@ export const CustomerDrawer: React.FC<CustomerDrawerProps> = ({
               className="w-full h-10 rounded-lg border border-emerald-600/20 bg-emerald-50 hover:bg-emerald-100/70 text-emerald-700 text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
             >
               <MessageSquare className="w-4 h-4" />
-              Open WhatsApp Chat
+              {lang === 'id' ? 'Buka Chat WhatsApp' : 'Open WhatsApp Chat'}
             </a>
           </div>
 
           {/* Customer Summary Cards */}
           <div className="space-y-3">
             <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-1.5">
-              Account Summary
+              {lang === 'id' ? 'Ringkasan Akun' : 'Account Summary'}
             </h5>
             
             <div className="grid grid-cols-2 gap-3">
@@ -136,7 +140,9 @@ export const CustomerDrawer: React.FC<CustomerDrawerProps> = ({
               <div className="p-4 bg-slate-50 border border-slate-200/60 rounded-xl drawer-stagger" style={staggerStyle(1)}>
                 <div className="flex items-center gap-2 text-slate-400 mb-1.5">
                   <ShoppingBag className="w-3.5 h-3.5" />
-                  <span className="text-[10px] font-semibold uppercase tracking-wider">Total Orders</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider">
+                    {lang === 'id' ? 'Total Order' : 'Total Orders'}
+                  </span>
                 </div>
                 <p className="text-lg font-bold text-slate-900 leading-none">{customer.totalOrders}</p>
               </div>
@@ -145,7 +151,9 @@ export const CustomerDrawer: React.FC<CustomerDrawerProps> = ({
               <div className="p-4 bg-slate-50 border border-slate-200/60 rounded-xl drawer-stagger" style={staggerStyle(2)}>
                 <div className="flex items-center gap-2 text-slate-400 mb-1.5">
                   <CreditCard className="w-3.5 h-3.5" />
-                  <span className="text-[10px] font-semibold uppercase tracking-wider">Total Spent</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider">
+                    {lang === 'id' ? 'Total Belanja' : 'Total Spent'}
+                  </span>
                 </div>
                 <p className="text-lg font-bold text-slate-900 leading-none">
                   Rp{customer.totalSpending.toLocaleString('id-ID')}
@@ -157,7 +165,7 @@ export const CustomerDrawer: React.FC<CustomerDrawerProps> = ({
             <div className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200/60 rounded-xl drawer-stagger" style={staggerStyle(3)}>
               <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
                 <Calendar className="w-3.5 h-3.5" />
-                Last Order Date
+                {lang === 'id' ? 'Tanggal Order Terakhir' : 'Last Order Date'}
               </span>
               <span className="text-xs font-bold text-slate-800 text-right">
                 {formatOrderDate(customer.lastOrderDate)}
@@ -168,7 +176,7 @@ export const CustomerDrawer: React.FC<CustomerDrawerProps> = ({
           {/* Customer Order History Section */}
           <div className="space-y-4 drawer-stagger" style={staggerStyle(4)}>
             <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-1.5">
-              Order History logs ({customerOrders.length})
+              {lang === 'id' ? `Riwayat Log Order (${customerOrders.length})` : `Order History logs (${customerOrders.length})`}
             </h5>
 
             <div className="space-y-3">
@@ -192,16 +200,16 @@ export const CustomerDrawer: React.FC<CustomerDrawerProps> = ({
                         {order.productName}
                       </p>
                       <p className="text-[10px] text-slate-400 font-bold mt-0.5">
-                        Added: {formatOrderDate(order.createdAt)}
+                        {lang === 'id' ? 'Dibuat' : 'Added'}: {formatOrderDate(order.createdAt)}
                       </p>
                       <p className="text-[10px] text-slate-400 font-bold mt-0.5">
-                        Qty: {order.quantity} - Price: Rp{order.totalPrice.toLocaleString('id-ID')}
+                        {lang === 'id' ? 'Jml' : 'Qty'}: {order.quantity} - {lang === 'id' ? 'Harga' : 'Price'}: Rp{order.totalPrice.toLocaleString('id-ID')}
                       </p>
                     </div>
 
                     {order.trackingNumber && (
                       <div className="text-[10px] font-mono text-slate-500 bg-slate-50 border border-slate-100 rounded-md py-1 px-2.5 mt-1">
-                        Tracking: {order.trackingNumber}
+                        {lang === 'id' ? 'Resi' : 'Tracking'}: {order.trackingNumber}
                       </div>
                     )}
                   </div>
