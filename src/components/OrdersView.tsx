@@ -97,14 +97,14 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
   const handleInvoiceAction = async (order: Order, action: 'copy' | 'send') => {
     const invoiceOrders = [order, ...orders.filter((item) => item.id !== order.id)];
     if (action === 'send') {
-      const result = await copyInvoiceAndOpenWhatsApp(order, invoiceOrders);
+      const result = await copyInvoiceAndOpenWhatsApp(order, invoiceOrders, lang);
       setCopiedId(`${order.id}-invoice-send`);
       setTimeout(() => setCopiedId(null), 2000);
       onInvoiceCopied(order.orderNumber, 'send', result.copied);
       return;
     }
 
-    await copyInvoiceText(order, invoiceOrders);
+    await copyInvoiceText(order, invoiceOrders, lang);
     setCopiedId(`${order.id}-invoice-copy`);
     setTimeout(() => setCopiedId(null), 2000);
     onInvoiceCopied(order.orderNumber, 'copy', true);
@@ -129,7 +129,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
                   void handleInvoiceAction(order, 'send');
                   setActiveWhatsAppPopover(null);
                 }}
-                title={compileInvoiceText(order, invoiceOrders)}
+                title={compileInvoiceText(order, invoiceOrders, lang)}
                 className="w-full text-left px-2.5 py-1.5 rounded-lg bg-blue-50/70 hover:bg-blue-50 text-[11px] font-semibold flex items-center justify-between group transition-colors cursor-pointer"
               >
                 <span className="text-blue-700 group-hover:text-blue-800 flex items-center gap-1.5">
@@ -147,7 +147,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
                   void handleInvoiceAction(order, 'copy');
                   setActiveWhatsAppPopover(null);
                 }}
-                title={compileInvoiceText(order, invoiceOrders)}
+                title={compileInvoiceText(order, invoiceOrders, lang)}
                 className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-slate-50 text-[11px] font-semibold flex items-center justify-between group transition-colors cursor-pointer"
               >
                 <span className="text-slate-700 group-hover:text-blue-700 flex items-center gap-1.5">
@@ -312,7 +312,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
                   </div>
                   <p className="mt-1 font-mono text-[11px] text-slate-500">{order.whatsappNumber}</p>
                   {order.notes && (
-                    <p className="mt-1 truncate text-[11px] text-slate-400">Note: {order.notes}</p>
+                    <p className="mt-1 truncate text-[11px] text-slate-400">{lang === 'id' ? 'Catatan:' : 'Note:'} {order.notes}</p>
                   )}
                 </div>
 
@@ -429,7 +429,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
                         <span className="font-semibold text-slate-900 block">{order.customerName}</span>
                         {order.notes && (
                           <span className="text-[10px] text-slate-400 block mt-0.5 truncate max-w-xs" title={order.notes}>
-                            Note: {order.notes}
+                            {lang === 'id' ? 'Catatan:' : 'Note:'} {order.notes}
                           </span>
                         )}
                       </td>

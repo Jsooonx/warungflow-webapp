@@ -407,14 +407,14 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                     <span className="dot-pulse" />
                   </div>
                   <div className="text-[10px] font-bold text-slate-800 flex flex-col">
-                    <span className="text-slate-400 font-semibold leading-tight">Konversi</span>
-                    <span className="text-emerald-600 font-extrabold leading-none">+24.8% hari ini</span>
+                    <span className="text-slate-400 font-semibold leading-tight">{lang === 'id' ? 'Konversi' : 'Conversion'}</span>
+                    <span className="text-emerald-600 font-extrabold leading-none">{lang === 'id' ? '+24.8% hari ini' : '+24.8% today'}</span>
                   </div>
                 </div>
               </div>
               <div className="space-y-2 z-10">
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[9px] font-extrabold uppercase tracking-wider">
-                  Analitik Real-time
+                  {lang === 'id' ? 'Analitik Real-time' : 'Real-time Analytics'}
                 </span>
                 <h3 className="text-sm font-bold text-slate-900">{t.card1Title}</h3>
                 <p className="text-xs text-slate-500 leading-relaxed">
@@ -440,8 +440,8 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                 <div className="absolute bottom-6 left-6 bg-white/95 backdrop-blur-md border border-slate-200/60 p-2.5 rounded-xl shadow-lg flex items-center gap-2.5 animate-float-2 group-hover:translate-y-[-8px] transition-transform duration-500 z-20">
                   <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[10px] font-extrabold">WA</div>
                   <div className="text-[9px] font-bold text-slate-800 flex flex-col">
-                    <span className="text-slate-400 font-semibold leading-tight">Ke Pelanggan</span>
-                    <span className="text-slate-900 font-extrabold leading-none">Follow-up Terkirim! ✓✓</span>
+                    <span className="text-slate-400 font-semibold leading-tight">{lang === 'id' ? 'Ke Pelanggan' : 'To Customer'}</span>
+                    <span className="text-slate-900 font-extrabold leading-none">{lang === 'id' ? 'Follow-up Terkirim! ✓✓' : 'Follow-up Sent! ✓✓'}</span>
                   </div>
                 </div>
               </div>
@@ -472,7 +472,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                 {/* Floating Status Dropdown Widget */}
                 <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md border border-slate-200/60 px-2 py-1.5 rounded-lg shadow-lg flex items-center gap-2 animate-float-1 group-hover:translate-x-[-4px] transition-transform duration-500 z-20">
                   <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" />
-                  <span className="text-[9px] font-extrabold text-slate-700">Status: Packing</span>
+                  <span className="text-[9px] font-extrabold text-slate-700">Status: {lang === 'id' ? 'Dikemas' : 'Packing'}</span>
                 </div>
               </div>
               <div className="space-y-2 z-10">
@@ -507,7 +507,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
               </div>
               <div className="space-y-2 z-10">
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 text-amber-700 text-[9px] font-extrabold uppercase tracking-wider">
-                  Template Fleksibel
+                  {lang === 'id' ? 'Template Fleksibel' : 'Flexible Templates'}
                 </span>
                 <h3 className="text-sm font-bold text-slate-900">{t.card4Title}</h3>
                 <p className="text-xs text-slate-500 leading-relaxed">
@@ -532,12 +532,12 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                 {/* Floating VIP Tag */}
                 <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md border border-slate-200/60 px-2 py-1.5 rounded-xl shadow-lg flex items-center gap-1.5 animate-float-1 group-hover:translate-y-[-4px] transition-transform duration-500 z-20">
                   <span className="text-[10px]">⭐</span>
-                  <span className="text-[9px] font-extrabold text-purple-700">Pelanggan VIP</span>
+                  <span className="text-[9px] font-extrabold text-purple-700">{lang === 'id' ? 'Pelanggan VIP' : 'VIP Customer'}</span>
                 </div>
               </div>
               <div className="space-y-2 z-10">
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-purple-50 text-purple-700 text-[9px] font-extrabold uppercase tracking-wider">
-                  Manajemen Pelanggan
+                  {lang === 'id' ? 'Manajemen Pelanggan' : 'Customer Management'}
                 </span>
                 <h3 className="text-sm font-bold text-slate-900">{t.card5Title}</h3>
                 <p className="text-xs text-slate-500 leading-relaxed">

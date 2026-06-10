@@ -13,8 +13,8 @@ export const formatWhatsAppLink = (phone: string) => {
   return `https://wa.me/${clean}`;
 };
 
-export const formatInvoiceDate = (dateString: string) => (
-  new Intl.DateTimeFormat('id-ID', {
+export const formatInvoiceDate = (dateString: string, lang: 'id' | 'en' = 'id') => (
+  new Intl.DateTimeFormat(lang === 'id' ? 'id-ID' : 'en-US', {
     weekday: 'long',
     day: '2-digit',
     month: 'long',
@@ -48,32 +48,32 @@ export const getInvoiceId = (order: InvoiceDraft, allOrders: InvoiceDraft[] = []
   return `${day}-${month}-${sequence}`;
 };
 
-export const compileInvoiceText = (order: InvoiceDraft, allOrders: InvoiceDraft[] = []) => {
+export const compileInvoiceText = (order: InvoiceDraft, allOrders: InvoiceDraft[] = [], lang: 'id' | 'en' = 'id') => {
   const lines = [
     'Warungify / Invoice Order',
     '',
     `Invoice ID: ${getInvoiceId(order, allOrders)}`,
     `Order: ${order.orderNumber}`,
-    `Tanggal: ${formatInvoiceDate(order.createdAt)}`,
-    `Nama: ${order.customerName}`,
-    `Produk: ${order.productName} x${order.quantity}`,
-    `Total paid: Rp ${order.totalPrice.toLocaleString('id-ID')}`,
+    `${lang === 'id' ? 'Tanggal' : 'Date'}: ${formatInvoiceDate(order.createdAt, lang)}`,
+    `${lang === 'id' ? 'Nama' : 'Name'}: ${order.customerName}`,
+    `${lang === 'id' ? 'Produk' : 'Product'}: ${order.productName} x${order.quantity}`,
+    `${lang === 'id' ? 'Total bayar' : 'Total paid'}: Rp ${order.totalPrice.toLocaleString('id-ID')}`,
   ];
 
   if (order.notes.trim()) {
-    lines.push(`Catatan: ${order.notes.trim()}`);
+    lines.push(`${lang === 'id' ? 'Catatan' : 'Notes'}: ${order.notes.trim()}`);
   }
 
-  lines.push('', 'Terima kasih, pembayaran Anda sudah kami terima.');
+  lines.push('', lang === 'id' ? 'Terima kasih, pembayaran Anda sudah kami terima.' : 'Thank you, we have received your payment.');
   return lines.join('\n');
 };
 
-export const copyInvoiceText = async (order: InvoiceDraft, allOrders: InvoiceDraft[] = []) => {
-  await navigator.clipboard.writeText(compileInvoiceText(order, allOrders));
+export const copyInvoiceText = async (order: InvoiceDraft, allOrders: InvoiceDraft[] = [], lang: 'id' | 'en' = 'id') => {
+  await navigator.clipboard.writeText(compileInvoiceText(order, allOrders, lang));
 };
 
-export const copyInvoiceAndOpenWhatsApp = async (order: InvoiceDraft, allOrders: InvoiceDraft[] = []) => {
-  const text = compileInvoiceText(order, allOrders);
+export const copyInvoiceAndOpenWhatsApp = async (order: InvoiceDraft, allOrders: InvoiceDraft[] = [], lang: 'id' | 'en' = 'id') => {
+  const text = compileInvoiceText(order, allOrders, lang);
   const link = formatWhatsAppLink(order.whatsappNumber);
 
   try {

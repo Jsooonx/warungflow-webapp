@@ -100,7 +100,7 @@ const MobileAppShell = ({
   children,
 }: MobileAppShellProps) => {
   const items = [
-    { id: 'dashboard', label: lang === 'id' ? 'Home' : 'Home', icon: LayoutDashboard },
+    { id: 'dashboard', label: lang === 'id' ? 'Dashboard' : 'Dashboard', icon: LayoutDashboard },
     { id: 'orders', label: lang === 'id' ? 'Order' : 'Orders', icon: ShoppingCart },
     { id: 'customers', label: lang === 'id' ? 'Pelanggan' : 'Customers', icon: Users },
     { id: 'templates', label: lang === 'id' ? 'Template' : 'Templates', icon: MessageSquare },
@@ -165,9 +165,6 @@ const MobileAppShell = ({
 };
 
 function App() {
-  useEffect(() => {
-    document.title = 'Warungify - SaaS Workspace';
-  }, []);
 
   const {
     user,
@@ -206,6 +203,18 @@ function App() {
     setLang(newLang);
     localStorage.setItem('warungify_lang', newLang);
   };
+
+  useEffect(() => {
+    document.title = lang === 'id' ? 'Warungify - SaaS Workspace & Manajemen Pesanan' : 'Warungify - SaaS Workspace & Order Management';
+    document.documentElement.lang = lang;
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', lang === 'id'
+        ? 'Warungify membantu penjual online mengelola pesanan, merekam database pelanggan, analitik real-time, dan follow-up WhatsApp tanpa potongan biaya admin e-commerce.'
+        : 'Warungify helps online sellers manage orders, record customer databases, real-time analytics, and WhatsApp follow-up without e-commerce admin fee deductions.'
+      );
+    }
+  }, [lang]);
 
   const [isPageLoading, setIsPageLoading] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -335,8 +344,8 @@ function App() {
       : typeof user?.user_metadata?.full_name === 'string' && user.user_metadata.full_name.trim()
       ? user.user_metadata.full_name.trim()
       : user?.email?.split('@')[0]
-  ) || 'Workspace User';
-  const displayEmail = user?.email || 'Account active';
+  ) || (lang === 'id' ? 'Pengguna Workspace' : 'Workspace User');
+  const displayEmail = user?.email || (lang === 'id' ? 'Akun aktif' : 'Account active');
 
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [lastChangedOrder, setLastChangedOrder] = useState<{ id: string; kind: ChangeKind } | null>(null);
@@ -447,7 +456,7 @@ function App() {
       if (options?.invoiceAction && savedOrder.status === 'paid') {
         const invoiceOrders = [savedOrder, ...orders.filter((order) => order.id !== savedOrder.id)];
         if (options.invoiceAction === 'send') {
-          const result = await copyInvoiceAndOpenWhatsApp(savedOrder, invoiceOrders);
+          const result = await copyInvoiceAndOpenWhatsApp(savedOrder, invoiceOrders, lang);
           await markInvoiceHandled(savedOrder.id);
           showToast(
             result.copied 
@@ -462,7 +471,7 @@ function App() {
                 : `Chat ${savedOrder.orderNumber} opened, but clipboard access was blocked. Copy the invoice manually.`),
           );
         } else {
-          await copyInvoiceText(savedOrder, invoiceOrders);
+          await copyInvoiceText(savedOrder, invoiceOrders, lang);
           await markInvoiceHandled(savedOrder.id);
           showToast(
             lang === 'id' ? 'Teks invoice disalin' : 'Invoice text copied', 
@@ -621,7 +630,7 @@ function App() {
       default:
         return (
           <div className="p-8 text-center text-slate-400">
-            Screen not found.
+            {lang === 'id' ? 'Halaman tidak ditemukan.' : 'Screen not found.'}
           </div>
         );
     }

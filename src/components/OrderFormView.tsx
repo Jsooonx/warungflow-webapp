@@ -112,7 +112,9 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
   const [pasteInput, setPasteInput] = useState('');
   const [copiedFormat, setCopiedFormat] = useState(false);
 
-  const formatTemplate = `Nama: \nWhatsApp: \nProduk: \nJumlah: 1\nTotal Harga: \nCatatan: `;
+  const formatTemplate = lang === 'id' 
+    ? `Nama: \nWhatsApp: \nProduk: \nJumlah: 1\nTotal Harga: \nCatatan: `
+    : `Name: \nWhatsApp: \nProduct: \nQuantity: 1\nTotal Price: \nNotes: `;
 
   const handleCopyFormat = () => {
     navigator.clipboard.writeText(formatTemplate).then(() => {
@@ -399,7 +401,7 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
                 type="text"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
-                placeholder="e.g. Pelanggan Baru"
+                placeholder={lang === 'id' ? 'e.g. Pelanggan Baru' : 'e.g. New Customer'}
                 className={`w-full h-10 px-3 border rounded-lg text-xs transition-colors focus:bg-white focus:outline-hidden ${
                   errors.customerName 
                     ? 'border-rose-300 bg-rose-50/20 focus:border-rose-500' 
@@ -477,7 +479,7 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
                 type="text"
                 value={productName}
                 onChange={(e) => setProductName(e.target.value)}
-                placeholder="e.g. Paket Produk Premium"
+                placeholder={lang === 'id' ? 'e.g. Paket Produk Premium' : 'e.g. Premium Product Package'}
                 className={`w-full h-10 px-3 border rounded-lg text-xs transition-colors focus:bg-white focus:outline-hidden ${
                   errors.productName 
                     ? 'border-rose-300 bg-rose-50/20 focus:border-rose-500' 
@@ -622,7 +624,7 @@ export const OrderFormView: React.FC<OrderFormViewProps> = ({
                       {lang === 'id' ? 'Lihat teks pesan' : 'View message text'}
                     </summary>
                     <pre className="mt-2 whitespace-pre-wrap rounded-md bg-slate-50 p-2 font-sans leading-relaxed text-slate-500">
-                      {compileInvoiceText(invoicePreviewOrder, orders)}
+                      {compileInvoiceText(invoicePreviewOrder, orders, lang)}
                     </pre>
                   </details>
                 </div>
