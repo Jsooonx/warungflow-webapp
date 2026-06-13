@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { ArrowLeft, CheckCircle, Database, Key, LogIn, Mail, ShieldCheck, Sparkles, UserPlus } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Key, LogIn, Mail, Sparkles, UserPlus } from 'lucide-react';
 import { RollingText } from './RollingText';
 import {
   sendPasswordReset,
@@ -136,75 +136,9 @@ export const LoginView: React.FC<LoginViewProps> = ({
   };
 
   return (
-    <div className="min-h-screen w-screen flex bg-slate-50 overflow-hidden font-sans select-none">
-      <div className="hidden lg:flex lg:w-1/2 bg-slate-900 relative items-center justify-center p-12 overflow-hidden">
-        <div className="absolute inset-0 bg-radial-gradient from-emerald-500/10 via-transparent to-transparent opacity-60 pointer-events-none" />
-        <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-emerald-500/5 blur-3xl" />
-        <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-teal-500/5 blur-3xl" />
-
-        <div className="max-w-md relative z-10 space-y-8">
-          <div className="flex items-center gap-3">
-            <img
-              src="/logo_warungify_upgrade.png"
-              alt="Warungify Logo"
-              className="w-12 h-12 object-contain rounded-2xl"
-            />
-            <div>
-              <h1 className="text-xl font-bold text-white tracking-tight leading-none">Warungify</h1>
-              <span className="text-[10px] text-emerald-400/80 font-semibold tracking-wider uppercase mt-1 inline-block">Workspace</span>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <h2 className="text-3xl font-extrabold text-white tracking-tight leading-tight">
-              {lang === 'id' 
-                ? 'Kelola pesanan WhatsApp dengan akun dan database sungguhan.' 
-                : 'Manage WhatsApp orders with real accounts and database.'}
-            </h2>
-            <p className="text-slate-400 text-sm leading-relaxed">
-              {lang === 'id' 
-                ? 'Auth, reset password, dan order database sekarang tersimpan per akun melalui Supabase.' 
-                : 'Auth, password reset, and order database are now saved per account via Supabase.'}
-            </p>
-          </div>
-
-          <div className="space-y-3 pt-4 border-t border-slate-800">
-            <div className="flex items-start gap-3 text-slate-300 text-xs">
-              <div className="p-1 rounded-md bg-emerald-500/10 text-emerald-400 mt-0.5">
-                <ShieldCheck className="w-3 h-3" />
-              </div>
-              <div>
-                <p className="font-semibold text-slate-200">
-                  {lang === 'id' ? 'Akun terverifikasi email' : 'Email verified account'}
-                </p>
-                <p className="text-slate-400 mt-0.5 font-normal leading-relaxed">
-                  {lang === 'id' 
-                    ? 'Pendaftaran publik dengan verifikasi email dan pemulihan password.' 
-                    : 'Public signup with email verification and password recovery.'}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 text-slate-300 text-xs">
-              <div className="p-1 rounded-md bg-emerald-500/10 text-emerald-400 mt-0.5">
-                <Database className="w-3 h-3" />
-              </div>
-              <div>
-                <p className="font-semibold text-slate-200">
-                  {lang === 'id' ? 'Database milik pengguna' : 'User-owned database'}
-                </p>
-                <p className="text-slate-400 mt-0.5 font-normal leading-relaxed">
-                  {lang === 'id' 
-                    ? 'Order dan template dipisahkan per akun dengan Supabase RLS.' 
-                    : 'Orders and templates are separated per account with Supabase RLS.'}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 md:p-16 bg-white overflow-y-auto">
-        <div className="w-full max-w-sm space-y-6">
+    <div className="min-h-screen w-screen flex items-center justify-center bg-slate-50 py-12 px-4 font-sans select-none">
+      <div className="w-full max-w-md bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-900/4">
+        <div className="space-y-6">
           <div className="flex items-center justify-between gap-4">
             <button
               type="button"
@@ -212,7 +146,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
               className="group inline-flex h-9 items-center gap-2 rounded-xl bg-slate-50 px-3 text-[11px] font-bold text-slate-500 shadow-xs transition-all duration-500 hover:bg-slate-950 hover:text-white cursor-pointer"
             >
               <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-500 group-hover:-translate-x-0.5" />
-              <RollingText compact>{lang === 'id' ? 'Kembali ke beranda' : 'Back to landing page'}</RollingText>
+              <RollingText compact>{lang === 'id' ? 'Kembali' : 'Back'}</RollingText>
             </button>
 
             <button
@@ -224,9 +158,19 @@ export const LoginView: React.FC<LoginViewProps> = ({
             </button>
           </div>
 
-          <div className="space-y-2">
-            <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight">{title}</h3>
-            <p className="text-xs text-slate-400">{subtitle}</p>
+          <div className="flex flex-col items-center text-center space-y-3 pt-2">
+            <div className="flex items-center justify-center gap-2.5">
+              <img
+                src="/logo_warungify_upgrade.png"
+                alt="Warungify Logo"
+                className="w-10 h-10 object-contain rounded-xl"
+              />
+              <span className="text-lg font-bold text-slate-950 tracking-tight">Warungify</span>
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight">{title}</h3>
+              <p className="text-xs text-slate-400">{subtitle}</p>
+            </div>
           </div>
 
           {!isSupabaseConfigured && (
